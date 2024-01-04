@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import it.twenfir.antlr.api.ErrorListener;
 import it.twenfir.antlr.ast.AstHelper;
 import it.twenfir.antlr.ast.AstNode;
+import it.twenfir.antlr.ast.Location;
 import it.twenfir.antlr.parser.ErrorListenerBase;
 import it.twenfir.prtfparser.PrtfParser.PrtfContext;
 import it.twenfir.prtfparser.ast.Prtf;
@@ -26,8 +27,10 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 
     @Override
     public Prtf visitPrtf(PrtfContext ctx) {
-        // TODO Auto-generated method stub
-        return (Prtf)super.visitPrtf(ctx);
+        Location location = AstHelper.location(ctx);
+        Prtf node = new Prtf(location);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
     }
 
     
