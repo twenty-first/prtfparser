@@ -1,7 +1,7 @@
 lexer grammar PrtfLexer;
 
-tokens { A_SPEC, AND, IDENTIFIER, INDICATOR, NUMBER, OR, PLUS, 
-        CONSTANT, LPAR, MINUS, QUOTE, RPAR, SLASH, STRING, STRING_START }
+tokens { A_SPEC, AND, IDENTIFIER, INDICATOR, LPAR, NUMBER, OR, PLUS, RPAR, 
+        CONSTANT, MINUS, QUOTE, SLASH, STRING, STRING_START }
 
 PREFIX      : PREFIX_F -> channel(HIDDEN), pushMode(FormType);
 PART_PREF   : ( ANY_F
@@ -182,14 +182,122 @@ US_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Location;
 
-LC_SPACE    : '      ' -> channel(HIDDEN), mode(Keyword);
-// To be completed
+LINE3       : [0-9] [0-9] [0-9] -> type(NUMBER), mode(Position);
+LC_SPACE3   : '   ' -> channel(HIDDEN), mode(Position);
+LC_SPACE2   : '  ' -> channel(HIDDEN), mode(Line1);
+LC_SPACE1   : ' ' -> channel(HIDDEN), mode(Line2);
+
+mode Line1;
+
+LINE1       : [0-9] -> type(NUMBER), mode(Position);
+
+mode Line2;
+
+LINE2       : [0-9] [0-9] -> type(NUMBER), mode(Position);
+
+mode Position;
+
+POS3       : [0-9+] [0-9] [0-9] -> type(NUMBER), mode(Keyword);
+PS_SPACE3   : '   ' -> channel(HIDDEN), mode(Keyword);
+PS_SPACE2   : '  ' -> channel(HIDDEN), mode(Pos1);
+PS_SPACE1   : ' ' -> channel(HIDDEN), mode(Pos2);
+
+mode Pos1;
+
+POS1        : [0-9] -> type(NUMBER), mode(Keyword);
+
+mode Pos2;
+
+POS2        : [0-9+] [0-9] -> type(NUMBER), mode(Keyword);
 
 mode Keyword;
 
 ALIAS       : 'ALIAS';
+DFT         : 'DFT';
+EDTCDE      : 'EDTCDE' -> mode(Edtcde);
+EDTWRD      : 'EDTWRD';
+REF         : 'REF';
+REFFLD      : 'REFFLD';
+TEXT        : 'TEXT';
+KW_LPAR     : '(' -> type(LPAR), mode(Expression);
+KW_SPACE    : ' '+ -> channel(HIDDEN);
 KW_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
-// To be completed
+MINUS          : '-' -> mode(KeywordCont);
+PLUS           : '+' -> mode(KeywordCont);
+
+mode KeywordCont;
+
+KC_EOL   : EOL_F+ -> channel(HIDDEN), popMode;
+
+mode Expression;
+
+EX_RPAR         : ')' -> type(RPAR), mode(Keyword);
+REL_OP          : 'EQ' | 'NE' | 'LT' | 'NL' | 'GT' | 'NG' | 'LE' | 'GE' ;
+EX_IDENTIFIER   : IDENTIFIER_F -> type(IDENTIFIER);
+EX_CONSTANT     : CONSTANT_F -> type(CONSTANT);
+EX_SPACE        : ' '+ -> channel(HIDDEN);
+EX_SLASH        : '/' -> type(SLASH);
+EX_NUMBER       : NUMBER_F -> type(NUMBER);
+EX_QUOTE        : '\'' -> type(QUOTE), mode(String);
+EX_PLUS		: '+' -> type(PLUS);
+EX_MINUS	: '-' -> type(MINUS);
+EX_EOL		: EOL_F+ -> channel(HIDDEN), mode(ExprPref);
+
+mode ExprPref;
+
+EP_PREFIX		: PREFIX_F -> channel(HIDDEN), mode(ExprForm);
+EP_PART_PREF	: ( ANY_F
+		  | ( ANY_F ANY_F )
+                  | ( ANY_F ANY_F ANY_F )
+                  | ( ANY_F ANY_F ANY_F ANY_F ) 
+                  ) 
+	          EOL_F -> channel(HIDDEN)
+    	          ;
+      
+EP_EOL      : EOL_F+ -> channel(HIDDEN);
+
+mode ExprForm;
+
+EF_A_SPEC   : A_F -> type(A_SPEC), mode(ExprMiddle);
+EF_SPACE    : ' ' -> channel(HIDDEN), mode(ExprMiddle);
+EF_COMMENT  : ANY_F? '*' ANY_F* -> channel(HIDDEN);
+EF_EOL      : EOL_F+ -> channel(HIDDEN), mode(ExprPref);
+
+mode ExprMiddle;
+
+EM_SPACE	: '                                      ' -> channel(HIDDEN), mode(Expression);
+
+mode Edtcde;
+
+EC_LPAR     : '(' -> type(LPAR);
+EC_RPAR     : ')' -> type(RPAR), mode(Keyword);
+EDITCODE    : [KNZ3];
+
+mode String;
+
+STRING_START_MINUS : STRING_START_F '-' EOL_F -> type(STRING_START), mode(StringPrfMinus);
+STRING_START_PLUS  : STRING_START_F '+' EOL_F -> type(STRING_START), mode(StringPrfPlus);
+STRING_START_EMPTY : STRING_START_F EOL_F -> type(STRING_START), mode(StringPrfPlus);
+STRING             : STRING_START_F [+-]? -> type(STRING);
+ST_QUOTE           : '\'' -> type(QUOTE), mode(Expression);
+
+mode StringPrfMinus;
+
+SPM_PREFIX  : PREFIX_F -> channel(HIDDEN), mode(StringSpecMinus);
+
+mode StringSpecMinus;
+
+SSM_A_SPEC  : A_F -> type(A_SPEC);
+SSM_SPACE   : '                                      ' -> channel(HIDDEN), mode(String);
+
+mode StringPrfPlus;
+
+SPP_PREFIX  : PREFIX_F -> channel(HIDDEN), mode(StringSpecPlus);
+
+mode StringSpecPlus;
+
+SSP_A_SPEC  : A_F -> type(A_SPEC);
+SSP_SPACE   : ' '+ -> channel(HIDDEN), mode(String);
 
 // Common fragments
 
@@ -203,3 +311,6 @@ fragment IND_F              : ( N_F | ' ' ) [0-9][0-9] ;
 fragment IDS_F              : [A-Z$\u00a3\u00a7] ;
 fragment IDC_F              : [A-Z0-9$_\u00a3\u00a7] ;
 fragment IDENTIFIER_F       : IDS_F IDC_F* ;
+fragment CONSTANT_F         : '*'[A-Z][A-Z0-9_]* ;
+fragment NUMBER_F           : [+-]? [0-9]+;
+fragment STRING_START_F       : ((~[\r\n'])|('\'\''))+ ;
