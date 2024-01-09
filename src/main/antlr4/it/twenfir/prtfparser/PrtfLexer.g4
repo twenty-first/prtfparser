@@ -218,7 +218,13 @@ EDTCDE      : 'EDTCDE' -> mode(Edtcde);
 EDTWRD      : 'EDTWRD';
 REF         : 'REF';
 REFFLD      : 'REFFLD';
+SKIPA		: 'SKIPA';
+SKIPB		: 'SKIPB';
+SPACEA		: 'SPACEA';
+SPACEB		: 'SPACEB';
 TEXT        : 'TEXT';
+UNDERLINE	: 'UNDERLINE';
+
 KW_LPAR     : '(' -> type(LPAR), mode(Expression);
 KW_SPACE    : ' '+ -> channel(HIDDEN);
 KW_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
