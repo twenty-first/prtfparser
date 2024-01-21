@@ -1,7 +1,7 @@
 lexer grammar PrtfLexer;
 
-tokens { A_SPEC, AND, IDENTIFIER, INDICATOR, LPAR, NUMBER, OR, PLUS, RPAR, 
-        CONSTANT, MINUS, QUOTE, SLASH, STRING, STRING_START }
+tokens { A_SPEC, AND, CONSTANT, IDENTIFIER, INDICATOR, LPAR, MINUS, NUMBER, OR, PLUS, QUOTE, RPAR, 
+		 STRING, STRING_START, SLASH }
 
 PREFIX      : PREFIX_F -> channel(HIDDEN), pushMode(FormType);
 PART_PREF   : ( ANY_F
@@ -30,7 +30,7 @@ CO_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Condition;
 
-CN_SPACE    : '          ' -> channel(HIDDEN), mode(NameType);
+CN_SPACE    : '         ' -> channel(HIDDEN), mode(NameType);
 CN_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 CN_IND      : IND_F -> type(INDICATOR), mode(Cond1);
 
@@ -212,18 +212,19 @@ POS2        : [0-9+] [0-9] -> type(NUMBER), mode(Keyword);
 
 mode Keyword;
 
-ALIAS       : 'ALIAS';
-DFT         : 'DFT';
-EDTCDE      : 'EDTCDE' -> mode(Edtcde);
-EDTWRD      : 'EDTWRD';
-REF         : 'REF';
-REFFLD      : 'REFFLD';
-SKIPA		: 'SKIPA';
-SKIPB		: 'SKIPB';
-SPACEA		: 'SPACEA';
-SPACEB		: 'SPACEB';
-TEXT        : 'TEXT';
-UNDERLINE	: 'UNDERLINE';
+ALIAS       : 'ALIAS' ;
+DATE		: 'DATE' ;
+DFT         : 'DFT' ;
+EDTCDE      : 'EDTCDE' -> mode(Edtcde) ;
+EDTWRD      : 'EDTWRD' ;
+REF         : 'REF' ;
+REFFLD      : 'REFFLD' ;
+SKIPA		: 'SKIPA' ;
+SKIPB		: 'SKIPB' ;
+SPACEA		: 'SPACEA' ;
+SPACEB		: 'SPACEB' ;
+TEXT        : 'TEXT' ;
+UNDERLINE	: 'UNDERLINE' ;
 
 KW_LPAR     : '(' -> type(LPAR), mode(Expression);
 KW_SPACE    : ' '+ -> channel(HIDDEN);
@@ -245,19 +246,19 @@ EX_SPACE        : ' '+ -> channel(HIDDEN);
 EX_SLASH        : '/' -> type(SLASH);
 EX_NUMBER       : NUMBER_F -> type(NUMBER);
 EX_QUOTE        : '\'' -> type(QUOTE), mode(String);
-EX_PLUS		: '+' -> type(PLUS);
-EX_MINUS	: '-' -> type(MINUS);
-EX_EOL		: EOL_F+ -> channel(HIDDEN), mode(ExprPref);
+EX_PLUS			: '+' -> type(PLUS);
+EX_MINUS		: '-' -> type(MINUS);
+EX_EOL			: EOL_F+ -> channel(HIDDEN), mode(ExprPref);
 
 mode ExprPref;
 
 EP_PREFIX		: PREFIX_F -> channel(HIDDEN), mode(ExprForm);
 EP_PART_PREF	: ( ANY_F
-		  | ( ANY_F ANY_F )
+		  		  | ( ANY_F ANY_F )
                   | ( ANY_F ANY_F ANY_F )
                   | ( ANY_F ANY_F ANY_F ANY_F ) 
                   ) 
-	          EOL_F -> channel(HIDDEN)
+	          	  EOL_F -> channel(HIDDEN)
     	          ;
       
 EP_EOL      : EOL_F+ -> channel(HIDDEN);
@@ -266,7 +267,7 @@ mode ExprForm;
 
 EF_A_SPEC   : A_F -> type(A_SPEC), mode(ExprMiddle);
 EF_SPACE    : ' ' -> channel(HIDDEN), mode(ExprMiddle);
-EF_COMMENT  : ANY_F? '*' ANY_F* -> channel(HIDDEN);
+EF_COMMENT	: ANY_F? '*' ANY_F* -> channel(HIDDEN);
 EF_EOL      : EOL_F+ -> channel(HIDDEN), mode(ExprPref);
 
 mode ExprMiddle;
@@ -277,7 +278,7 @@ mode Edtcde;
 
 EC_LPAR     : '(' -> type(LPAR);
 EC_RPAR     : ')' -> type(RPAR), mode(Keyword);
-EDITCODE    : [KNZ3];
+EDITCODE    : [A-DJ-QW-Z1-4];
 
 mode String;
 
