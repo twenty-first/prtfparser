@@ -8,6 +8,16 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
 	public ValueT visitCondition(Condition node) {
         return visitChildren(node);
 	}
+
+    @Override
+    public ValueT visitDescription(Description node) {
+        return visitChildren(node);
+    }
+
+    @Override
+    public ValueT visitDescriptionElement(DescriptionElement node) {
+        return visitChildren(node);
+    }
 	
 	@Override
 	public ValueT visitField(Field node) {
@@ -33,4 +43,9 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
 	public ValueT visitRef(Ref node) {
         return visitChildren(node);
 	}
+
+    @Override
+    public ValueT visitText(Text node) {
+        return visitChildren(node);
+    }
 }

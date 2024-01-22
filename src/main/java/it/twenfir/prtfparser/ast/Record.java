@@ -41,6 +41,11 @@ public class Record extends AstNode {
 		return spaceb;
 	}
 
+	public String getText() {
+		Text t = getChild(Text.class);
+		return t != null ? t.getDescription().getDescription() : null;
+	}
+	
 	public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
 		if ( visitor instanceof PrtfVisitor ) {
 			return ((PrtfVisitor<? extends ValueT>) visitor).visitRecord(this);

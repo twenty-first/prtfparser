@@ -1,9 +1,12 @@
 package it.twenfir.prtfparser;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.RuleNode;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import it.twenfir.antlr.api.ErrorListener;
 import it.twenfir.antlr.ast.AstHelper;
@@ -12,6 +15,8 @@ import it.twenfir.antlr.ast.Location;
 import it.twenfir.antlr.ast.Node;
 import it.twenfir.antlr.parser.ErrorListenerBase;
 import it.twenfir.prtfparser.PrtfParser.ConditionContext;
+import it.twenfir.prtfparser.PrtfParser.DescriptionContext;
+import it.twenfir.prtfparser.PrtfParser.DescriptionElementContext;
 import it.twenfir.prtfparser.PrtfParser.EntryContext;
 import it.twenfir.prtfparser.PrtfParser.FieldContext;
 import it.twenfir.prtfparser.PrtfParser.LabelContext;
@@ -23,15 +28,21 @@ import it.twenfir.prtfparser.PrtfParser.SkipaContext;
 import it.twenfir.prtfparser.PrtfParser.SkipbContext;
 import it.twenfir.prtfparser.PrtfParser.SpaceaContext;
 import it.twenfir.prtfparser.PrtfParser.SpacebContext;
+import it.twenfir.prtfparser.PrtfParser.TextContext;
 import it.twenfir.prtfparser.ast.Condition;
+import it.twenfir.prtfparser.ast.Description;
+import it.twenfir.prtfparser.ast.DescriptionElement;
 import it.twenfir.prtfparser.ast.Entry;
 import it.twenfir.prtfparser.ast.Field;
 import it.twenfir.prtfparser.ast.Label;
 import it.twenfir.prtfparser.ast.Prtf;
 import it.twenfir.prtfparser.ast.Ref;
+import it.twenfir.prtfparser.ast.Text;
 
 public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 
+	private Pattern endDescRe = Pattern.compile("\\+|-");
+	private Pattern eolRe = Pattern.compile("\\r|\\n");
 	
 	private ErrorListener listener;
 
@@ -66,6 +77,44 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         Condition node = new Condition(location);
         AstHelper.visitChildren(this, ctx, node);
         return node;
+	}
+
+	@Override
+	public Description visitDescription(DescriptionContext ctx) {
+		Location location = AstHelper.location(ctx);
+		Description node = new Description(location);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
+	public DescriptionElement visitDescriptionElement(DescriptionElementContext ctx) {
+		Location location = AstHelper.location(ctx);
+		StringBuilder sb = new StringBuilder();
+		for ( TerminalNode ds : ctx.STRING_START() ) {
+			Matcher m = endDescRe.matcher(ds.getText());
+			int i = -1;
+			while ( m.find() ) {
+				i = m.start();
+			}
+			if ( i != -1 ) {
+				String s = ds.getText().charAt(i) == '-' && ds.getText().charAt(i-1) == ' ' ?
+						ds.getText().substring(0, i - 1) : ds.getText().substring(0, i);
+				sb.append(s);
+			}
+			else {
+				m = eolRe.matcher(ds.getText());
+				m.find();
+				i = m.start();
+				sb.append(ds.getText().substring(0, i));
+			}
+		}
+		if ( ctx.STRING() != null ) {
+			sb.append(ctx.STRING().getText());
+		}
+		DescriptionElement node = new DescriptionElement(location, sb.toString());
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
 	}
 
 	@Override
@@ -143,6 +192,14 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 			library = ctx.CONSTANT().getText();
 		}
 		Ref node = new Ref(location, library, reference);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
+	public Text visitText(TextContext ctx) {
+		Location location = AstHelper.location(ctx);
+		Text node = new Text(location);
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}
