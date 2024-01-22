@@ -48,4 +48,28 @@ public class ParserUnitTests extends TestBase {
 		helper.parse(src);
 	}
 
+	@Test
+	public void fileKeywordTest() throws ParseException {
+		String src =
+				"     A                                      REF(FILE)\n" + 
+				"     A                                      INDARA\n" +
+				"     A          R TESTPRTF";
+		helper.parse(src);
+	}
+
+//     A                                      TEXT('Etichetta')
+//     A                                      SKIPB(001)
+//     A                                     1
+//     A                                      'N'
+
+	@Test
+	public void recordKeywordTest() throws ParseException {
+		String src =
+				"     A          R TESTPRTF\n" +
+				"     A                                      TEXT('Text')\n" +
+				"     A                                      SKIPB(001)\n" +
+				"     A                                     1\n" +
+				"     A                                      'N'";
+		helper.parse(src);
+	}
 }

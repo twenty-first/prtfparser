@@ -22,6 +22,7 @@ recordKeywords	: ( skipa
 				  | skipb
 				  | spacea
 				  | spaceb
+				  | text
 				  )+
 				  ;
 
@@ -69,7 +70,7 @@ indara		: A_SPEC* INDARA ;
 
 pageNumber	: A_SPEC* PAGNBR ;
 
-ref			: REF LPAR ( ( refLib = IDENTIFIER | CONSTANT ) SLASH )? refFile = IDENTIFIER RPAR ;
+ref			: A_SPEC* REF LPAR ( ( refLib = IDENTIFIER | CONSTANT ) SLASH )? refFile = IDENTIFIER RPAR ;
 
 refField 	: A_SPEC* REFFLD LPAR 
 	        ref_field = IDENTIFIER 
@@ -87,7 +88,7 @@ spacea		: A_SPEC* SPACEA LPAR NUMBER RPAR ;
 
 spaceb		: A_SPEC* SPACEB LPAR NUMBER RPAR ;
 
-text		: A_SPEC* TEXT description ;
+text		: A_SPEC* TEXT LPAR description RPAR ;
 
 time		: A_SPEC* TIME ;
 
