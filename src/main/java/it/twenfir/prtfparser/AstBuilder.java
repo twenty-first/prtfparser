@@ -9,6 +9,7 @@ import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.Location;
 import it.twenfir.antlr.parser.ErrorListenerBase;
 import it.twenfir.prtfparser.PrtfParser.PrtfContext;
+import it.twenfir.prtfparser.PrtfParser.RecordContext;
 import it.twenfir.prtfparser.ast.Prtf;
 
 public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
@@ -33,5 +34,12 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         return node;
     }
 
+    @Override
+    public it.twenfir.prtfparser.ast.Record visitRecord(RecordContext ctx) {
+        Location location = AstHelper.location(ctx);
+        it.twenfir.prtfparser.ast.Record node = new it.twenfir.prtfparser.ast.Record(location);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+    }
     
 }

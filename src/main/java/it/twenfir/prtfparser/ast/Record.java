@@ -4,15 +4,15 @@ import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
 
-public class Prtf extends AstNode {
+public class Record extends AstNode {
 
-    public Prtf(Location location) {
-        super(location);
-    }
+	public Record(Location location) {
+		super(location);
+	}
 	
     public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
 		if ( visitor instanceof PrtfVisitor ) {
-			return ((PrtfVisitor<? extends ValueT>) visitor).visitPrtf(this);
+			return ((PrtfVisitor<? extends ValueT>) visitor).visitRecord(this);
     	}
     	else {
     		return visitor.visit(this);
