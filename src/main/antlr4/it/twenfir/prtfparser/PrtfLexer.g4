@@ -36,20 +36,15 @@ CN_IND      : IND_F -> type(INDICATOR), mode(Cond1);
 
 mode Cond1;
 
-CN1_SPACE   : '       ' -> channel(HIDDEN), mode(NameType);
+CN1_SPACE   : '      ' -> channel(HIDDEN), mode(NameType);
 CN1_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 CN1_IND     : IND_F -> type(INDICATOR), mode(Cond2);
 
 mode Cond2;
 
-CN2_SPACE   : '    ' -> channel(HIDDEN), mode(NameType);
+CN2_SPACE   : '   ' -> channel(HIDDEN), mode(NameType);
 CN2_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
-CN2_IND     : IND_F -> type(INDICATOR), mode(Cond3);
-
-mode Cond3;
-
-CN3_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
-CN3_IND     : IND_F -> type(INDICATOR), mode(NameType);
+CN2_IND     : IND_F -> type(INDICATOR), mode(NameType);
 
 mode NameType;
 
@@ -217,6 +212,9 @@ DATE		: 'DATE' ;
 DFT         : 'DFT' ;
 EDTCDE      : 'EDTCDE' -> mode(Edtcde) ;
 EDTWRD      : 'EDTWRD' ;
+HIGHLIGHT	: 'HIGHLIGHT' ;
+INDARA		: 'INDARA' ;
+PAGNBR		: 'PAGNBR' ;
 REF         : 'REF' ;
 REFFLD      : 'REFFLD' ;
 SKIPA		: 'SKIPA' ;
@@ -224,9 +222,11 @@ SKIPB		: 'SKIPB' ;
 SPACEA		: 'SPACEA' ;
 SPACEB		: 'SPACEB' ;
 TEXT        : 'TEXT' ;
+TIME		: 'TIME' ;
 UNDERLINE	: 'UNDERLINE' ;
 
 KW_LPAR     : '(' -> type(LPAR), mode(Expression);
+KW_QUOTE        : '\'' -> type(QUOTE), mode(String);
 KW_SPACE    : ' '+ -> channel(HIDDEN);
 KW_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 MINUS          : '-' -> mode(KeywordCont);

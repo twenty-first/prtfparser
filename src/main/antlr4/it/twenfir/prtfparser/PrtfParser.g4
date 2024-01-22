@@ -7,27 +7,33 @@ options
 
 prtf	: fileKeywords? record+ EOF ;
 
-fileKeywords	: ( ref
+fileKeywords	: ( indara
+				  | ref
 				  )+
 				  ;
 
 record	: A_SPEC* RECORD ( recordName = IDENTIFIER ) 
 		  recordKeywords? 
-		  field*
+		  entry*
 		  A_SPEC*
 		  ;
 
-recordKeywords	: ( skipb
+recordKeywords	: ( skipa
+				  | skipb
+				  | spacea
+				  | spaceb
 				  )+
 				  ;
 
-field : A_SPEC* condition? ( namedField | unnamedField ) ;
+entry		: A_SPEC* condition? ( field | label ) ;
 
-condition	: ( AND | OR )? INDICATOR ( INDICATOR INDICATOR? )? ;
+condition	: term ( A_SPEC* ( AND | OR ) term )* ;
 
-namedField	: IDENTIFIER dataType? position? fieldKeywords? ;
+term		: A_SPEC* INDICATOR ( INDICATOR INDICATOR? )? ;
 
-unnamedField	: position? fieldKeywords ;
+field		: IDENTIFIER dataType? position? fieldKeywords? ;
+
+label		: position? fieldKeywords ;
 
 dataType 	: ( NUMBER | NUMBER? TYPE ) NUMBER? ;
 
@@ -35,32 +41,58 @@ position	: NUMBER? NUMBER ;
 
 fieldKeywords	: ( dft
 				  | date
-				  | edtcde
+				  | editCode
+				  | editWord
+				  | highlight
+				  | pageNumber
+				  | refField
 				  | skipa
 				  | skipb
 				  | spacea
 				  | spaceb
-				  | A_SPEC* UNDERLINE
+				  | text
+				  | time
+				  | underline
 				  )+ ;
 
-date	: A_SPEC* DATE ;
+date		: A_SPEC* DATE ;
 
-dft		: A_SPEC* DFT? description ;
+dft			: A_SPEC* ( DFT LPAR description RPAR | description ) ;
 
-edtcde	: A_SPEC* EDTCDE LPAR EDITCODE RPAR ;
+editCode	: A_SPEC* EDTCDE LPAR EDITCODE RPAR ;
 
-ref		: REF LPAR ( ( refLib = IDENTIFIER | CONSTANT ) SLASH )? refFile = IDENTIFIER RPAR ;
+editWord : A_SPEC* EDTWRD description ;
 
-skipa	: A_SPEC* SKIPA LPAR NUMBER RPAR ;
+highlight	: A_SPEC* HIGHLIGHT ;
 
-skipb	: A_SPEC* SKIPB LPAR NUMBER RPAR ;
+indara		: A_SPEC* INDARA ;
 
-spacea	: A_SPEC* SPACEA LPAR NUMBER RPAR ;
+pageNumber	: A_SPEC* PAGNBR ;
 
-spaceb	: A_SPEC* SPACEB LPAR NUMBER RPAR ;
+ref			: REF LPAR ( ( refLib = IDENTIFIER | CONSTANT ) SLASH )? refFile = IDENTIFIER RPAR ;
 
-underline:	A_SPEC* UNDERLINE ;
+refField 	: A_SPEC* REFFLD LPAR 
+	        ref_field = IDENTIFIER 
+	        ( ( ( ref_lib = IDENTIFIER | con_lib = CONSTANT ) SLASH )?
+	          ( ref_file = IDENTIFIER | con_file = CONSTANT )
+	        )?
+	        RPAR
+	        ;
 
-description : LPAR descriptionElement ( ( MINUS | PLUS )? A_SPEC* descriptionElement )* RPAR ;
+skipa		: A_SPEC* SKIPA LPAR NUMBER RPAR ;
+
+skipb		: A_SPEC* SKIPB LPAR NUMBER RPAR ;
+
+spacea		: A_SPEC* SPACEA LPAR NUMBER RPAR ;
+
+spaceb		: A_SPEC* SPACEB LPAR NUMBER RPAR ;
+
+text		: A_SPEC* TEXT description ;
+
+time		: A_SPEC* TIME ;
+
+underline	: A_SPEC* UNDERLINE ;
+
+description : descriptionElement ( ( MINUS | PLUS )? A_SPEC* descriptionElement )* ;
 
 descriptionElement : QUOTE ( STRING_START A_SPEC* )* STRING? QUOTE ;
