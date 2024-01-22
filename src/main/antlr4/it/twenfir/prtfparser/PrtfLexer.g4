@@ -226,7 +226,7 @@ TIME		: 'TIME' ;
 UNDERLINE	: 'UNDERLINE' ;
 
 KW_LPAR     : '(' -> type(LPAR), mode(Expression);
-KW_QUOTE        : '\'' -> type(QUOTE), mode(String);
+KW_QUOTE        : '\'' -> type(QUOTE), pushMode(String);
 KW_SPACE    : ' '+ -> channel(HIDDEN);
 KW_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 MINUS          : '-' -> mode(KeywordCont);
@@ -245,7 +245,7 @@ EX_CONSTANT     : CONSTANT_F -> type(CONSTANT);
 EX_SPACE        : ' '+ -> channel(HIDDEN);
 EX_SLASH        : '/' -> type(SLASH);
 EX_NUMBER       : NUMBER_F -> type(NUMBER);
-EX_QUOTE        : '\'' -> type(QUOTE), mode(String);
+EX_QUOTE        : '\'' -> type(QUOTE), pushMode(String);
 EX_PLUS			: '+' -> type(PLUS);
 EX_MINUS		: '-' -> type(MINUS);
 EX_EOL			: EOL_F+ -> channel(HIDDEN), mode(ExprPref);
@@ -286,7 +286,7 @@ STRING_START_MINUS : STRING_START_F '-' EOL_F -> type(STRING_START), mode(String
 STRING_START_PLUS  : STRING_START_F '+' EOL_F -> type(STRING_START), mode(StringPrfPlus);
 STRING_START_EMPTY : STRING_START_F EOL_F -> type(STRING_START), mode(StringPrfPlus);
 STRING             : STRING_START_F [+-]? -> type(STRING);
-ST_QUOTE           : '\'' -> type(QUOTE), mode(Expression);
+ST_QUOTE           : '\'' -> type(QUOTE), popMode;
 
 mode StringPrfMinus;
 

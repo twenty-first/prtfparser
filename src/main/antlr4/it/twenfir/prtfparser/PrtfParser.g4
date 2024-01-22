@@ -32,7 +32,7 @@ condition	: term ( A_SPEC* ( AND | OR ) term )* ;
 
 term		: A_SPEC* INDICATOR ( INDICATOR INDICATOR? )? ;
 
-field		: IDENTIFIER dataType? position? fieldKeywords? ;
+field		: IDENTIFIER REFERENCE? dataType? USAGE? position? fieldKeywords? ;
 
 label		: position? fieldKeywords ;
 
@@ -62,7 +62,7 @@ dft			: A_SPEC* ( DFT LPAR description RPAR | description ) ;
 
 editCode	: A_SPEC* EDTCDE LPAR EDITCODE RPAR ;
 
-editWord : A_SPEC* EDTWRD description ;
+editWord : A_SPEC* EDTWRD LPAR description RPAR ;
 
 highlight	: A_SPEC* HIGHLIGHT ;
 
