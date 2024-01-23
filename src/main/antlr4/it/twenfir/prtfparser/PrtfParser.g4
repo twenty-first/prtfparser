@@ -28,7 +28,9 @@ recordKeywords	: ( skipa
 
 entry		: A_SPEC* condition? ( field | label ) ;
 
-condition	: term ( A_SPEC* ( AND | OR ) term )* ;
+condition	: term opTerm* ;
+
+opTerm		: A_SPEC* ( AND | OR ) term ;
 
 term		: A_SPEC* INDICATOR ( INDICATOR INDICATOR? )? ;
 

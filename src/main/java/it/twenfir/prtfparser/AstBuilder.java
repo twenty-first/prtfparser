@@ -1,5 +1,6 @@
 package it.twenfir.prtfparser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ import it.twenfir.prtfparser.PrtfParser.DescriptionElementContext;
 import it.twenfir.prtfparser.PrtfParser.EntryContext;
 import it.twenfir.prtfparser.PrtfParser.FieldContext;
 import it.twenfir.prtfparser.PrtfParser.LabelContext;
+import it.twenfir.prtfparser.PrtfParser.OpTermContext;
 import it.twenfir.prtfparser.PrtfParser.PrtfContext;
 import it.twenfir.prtfparser.PrtfParser.RecordContext;
 import it.twenfir.prtfparser.PrtfParser.RecordKeywordsContext;
@@ -28,15 +30,20 @@ import it.twenfir.prtfparser.PrtfParser.SkipaContext;
 import it.twenfir.prtfparser.PrtfParser.SkipbContext;
 import it.twenfir.prtfparser.PrtfParser.SpaceaContext;
 import it.twenfir.prtfparser.PrtfParser.SpacebContext;
+import it.twenfir.prtfparser.PrtfParser.TermContext;
 import it.twenfir.prtfparser.PrtfParser.TextContext;
+import it.twenfir.prtfparser.ast.CondOp;
 import it.twenfir.prtfparser.ast.Condition;
 import it.twenfir.prtfparser.ast.Description;
 import it.twenfir.prtfparser.ast.DescriptionElement;
 import it.twenfir.prtfparser.ast.Entry;
 import it.twenfir.prtfparser.ast.Field;
+import it.twenfir.prtfparser.ast.Indicator;
 import it.twenfir.prtfparser.ast.Label;
+import it.twenfir.prtfparser.ast.OpTerm;
 import it.twenfir.prtfparser.ast.Prtf;
 import it.twenfir.prtfparser.ast.Ref;
+import it.twenfir.prtfparser.ast.Term;
 import it.twenfir.prtfparser.ast.Text;
 
 public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
@@ -152,11 +159,21 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         AstHelper.visitChildren(this, ctx, node);
         return node;
 	}
+
+	@Override
+	public OpTerm visitOpTerm(OpTermContext ctx) {
+		Location location = AstHelper.location(ctx);
+		CondOp co = ctx.OR() != null ? CondOp.OR : CondOp.AND;
+		OpTerm node = new OpTerm(location, co);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
 	
     @Override
     public Prtf visitPrtf(PrtfContext ctx) {
         Location location = AstHelper.location(ctx);
-        Prtf node = new Prtf(location, ctx.fileKeywords() != null ? ctx.fileKeywords().indara().size() > 0 : false);
+        Prtf node = new Prtf(location, ctx.fileKeywords() != null ? 
+        		ctx.fileKeywords().indara().size() > 0 : false);
         AstHelper.visitChildren(this, ctx, node);
         return node;
     }
@@ -175,7 +192,8 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         	spacea = extractSpacea(rk.spacea());
         	spaceb = extractSpaceb(rk.spaceb());
         }
-        it.twenfir.prtfparser.ast.Record node = new it.twenfir.prtfparser.ast.Record(location, ctx.recordName.getText(), skipa, skipb, spacea, spaceb);
+        it.twenfir.prtfparser.ast.Record node = new it.twenfir.prtfparser.ast.Record(
+        		location, ctx.recordName.getText(), skipa, skipb, spacea, spaceb);
         AstHelper.visitChildren(this, ctx, node);
         return node;
     }
@@ -192,6 +210,22 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 			library = ctx.CONSTANT().getText();
 		}
 		Ref node = new Ref(location, library, reference);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
+	public Term visitTerm(TermContext ctx) {
+		Location location = AstHelper.location(ctx);
+		List<Indicator> inds = new ArrayList<Indicator>();
+		for ( TerminalNode i : ctx.INDICATOR() ) {
+			boolean n = i.getText().charAt(0) == 'N';
+			StringBuffer sb = new StringBuffer();
+			sb.append(i.getText().charAt(1));
+			sb.append(i.getText().charAt(2));
+			int v = Integer.parseInt(sb.toString());
+		}
+		Term node = new Term(location, inds);
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}

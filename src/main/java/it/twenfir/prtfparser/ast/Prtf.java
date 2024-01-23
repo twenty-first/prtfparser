@@ -8,15 +8,15 @@ import it.twenfir.antlr.ast.Location;
 
 public class Prtf extends AstNode {
 
-	private final boolean indara;
+	private final boolean indArea;
 	
-    public Prtf(Location location, boolean indara) {
+    public Prtf(Location location, boolean indArea) {
         super(location);
-        this.indara = indara;
+        this.indArea = indArea;
     }
 	
-	public boolean isIndara() {
-		return indara;
+	public boolean isIndArea() {
+		return indArea;
 	}
 
 	public Ref getRef() {

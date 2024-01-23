@@ -1,28 +1,28 @@
 package it.twenfir.prtfparser.ast;
 
 import java.util.Iterator;
+import java.util.List;
 
 import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
 
-public class Condition extends AstNode {
+public class Term extends AstNode {
 
-	public Condition(Location location) {
+	private final List<Indicator> indicators;
+	
+	public Term(Location location, List<Indicator> indicators) {
 		super(location);
-	}
-
-	Term getTerm() {
-		return getChild(Term.class);
+		this.indicators = indicators;
 	}
 	
-	Iterator<OpTerm> getOpTerms() {
-		return getChildren(OpTerm.class);
+	public Iterator<Indicator> getIndicators() {
+		return indicators.iterator();
 	}
 	
 	public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
 		if ( visitor instanceof PrtfVisitor ) {
-			return ((PrtfVisitor<? extends ValueT>) visitor).visitCondition(this);
+			return ((PrtfVisitor<? extends ValueT>) visitor).visitTerm(this);
     	}
     	else {
     		return visitor.visit(this);

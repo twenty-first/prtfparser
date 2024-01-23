@@ -1,5 +1,7 @@
 package it.twenfir.prtfparser.ast;
 
+import java.util.Iterator;
+
 import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
@@ -7,43 +9,47 @@ import it.twenfir.antlr.ast.Location;
 public class Record extends AstNode {
 
 	private final String name;
-	private final Integer skipa;
-	private final Integer skipb;
-	private final Integer spacea;
-	private final Integer spaceb;
+	private final Integer skipAfter;
+	private final Integer skipBefore;
+	private final Integer spaceAfter;
+	private final Integer spaceBefore;
 	
-	public Record(Location location, String name, Integer skipa, Integer skipb, Integer spacea, Integer spaceb) {
+	public Record(Location location, String name, Integer skipAfter, Integer skipBefore, Integer spaceAfter, Integer spaceBefore) {
 		super(location);
 		this.name = name;
-		this.skipa = skipa;
-		this.skipb = skipb;
-		this.spacea = spacea;
-		this.spaceb = spaceb;
+		this.skipAfter = skipAfter;
+		this.skipBefore = skipBefore;
+		this.spaceAfter = spaceAfter;
+		this.spaceBefore = spaceBefore;
 	}
 	
     public String getName() {
 		return name;
 	}
 
-	public Integer getSkipa() {
-		return skipa;
+	public Integer getSkipAfter() {
+		return skipAfter;
 	}
 
-	public Integer getSkipb() {
-		return skipb;
+	public Integer getSkipBefore() {
+		return skipBefore;
 	}
 
-	public Integer getSpacea() {
-		return spacea;
+	public Integer getSpaceAfter() {
+		return spaceAfter;
 	}
 
-	public Integer getSpaceb() {
-		return spaceb;
+	public Integer getSpaceBefore() {
+		return spaceBefore;
 	}
 
 	public String getText() {
 		Text t = getChild(Text.class);
 		return t != null ? t.getDescription().getDescription() : null;
+	}
+
+	public Iterator<Entry> getEntries() {
+		return getChildren(Entry.class);
 	}
 	
 	public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
