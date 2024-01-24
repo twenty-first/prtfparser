@@ -34,13 +34,15 @@ opTerm		: A_SPEC* ( AND | OR ) term ;
 
 term		: A_SPEC* INDICATOR ( INDICATOR INDICATOR? )? ;
 
-field		: IDENTIFIER REFERENCE? dataType? ( OUTPUT | PROGRAM )? position? entryKeywords? ;
+field		: IDENTIFIER REFERENCE? dataType? ( OUTPUT | PROGRAM )? location? entryKeywords? ;
 
-label		: position? entryKeywords ;
+label		: location? entryKeywords ;
 
 dataType 	: ( NUMBER | NUMBER? TYPE ) NUMBER? ;
 
-position	: NUMBER? NUMBER ;
+location	: locValue? locValue ;
+
+locValue	: PLUS? NUMBER ;
 
 entryKeywords	: ( dft
 				  | date

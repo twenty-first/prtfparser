@@ -10,6 +10,7 @@ public interface PrtfVisitor<ValueT> extends AstVisitor<ValueT> {
 	ValueT visitField(Field node);
 	ValueT visitFileKeywords(FileKeywords node);
 	ValueT visitLabel(Label node);
+	ValueT visitLocation(Location node);
     ValueT visitOpTerm(OpTerm node);
 	ValueT visitPrtf(Prtf node);
 	ValueT visitRecord(Record node);

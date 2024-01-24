@@ -19,6 +19,10 @@ public abstract class Entry extends AstNode {
 		this.condition = condition;
 	}
 
+	public it.twenfir.prtfparser.ast.Location getLocation() {
+		return getChild(it.twenfir.prtfparser.ast.Location.class);
+	}
+	
 	private EntryKeywords getKeywords() {
 		return getChild(EntryKeywords.class);
 	}

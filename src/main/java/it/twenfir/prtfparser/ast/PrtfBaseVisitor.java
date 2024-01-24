@@ -39,7 +39,12 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
         return visitChildren(node);
 	}
 	
-	@Override
+    @Override
+    public ValueT visitLocation(Location node) {
+        return visitChildren(node);
+    }
+
+    @Override
 	public ValueT visitOpTerm(OpTerm node) {
         return visitChildren(node);
 	}

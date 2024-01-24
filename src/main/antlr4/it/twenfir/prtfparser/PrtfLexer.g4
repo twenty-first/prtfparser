@@ -180,8 +180,11 @@ mode Location;
 
 LINE3       : [0-9] [0-9] [0-9] -> type(NUMBER), mode(Position);
 LC_SPACE3   : '   ' -> channel(HIDDEN), mode(Position);
+LC_PLUS3	: ( '+  ' | ' + ' | '  +' ) -> type(PLUS), mode(Position);
 LC_SPACE2   : '  ' -> channel(HIDDEN), mode(Line1);
+LC_PLUS2    : ( '+ ' | ' +' ) -> type(PLUS), mode(Line1);
 LC_SPACE1   : ' ' -> channel(HIDDEN), mode(Line2);
+LC_PLUS1    : '+' -> type(PLUS), mode(Line2);
 
 mode Line1;
 
@@ -193,9 +196,11 @@ LINE2       : [0-9] [0-9] -> type(NUMBER), mode(Position);
 
 mode Position;
 
-POS3       : [0-9+] [0-9] [0-9] -> type(NUMBER), mode(Keyword);
+POS3       : [0-9] [0-9] [0-9] -> type(NUMBER), mode(Keyword);
 PS_SPACE3   : '   ' -> channel(HIDDEN), mode(Keyword);
+PS_PLUS3	: ( '+  ' | ' + ' | '  +' ) -> type(PLUS), mode(Keyword);
 PS_SPACE2   : '  ' -> channel(HIDDEN), mode(Pos1);
+PS_PLUS2    : ( '+ ' | ' +' ) -> type(PLUS), mode(Pos1);
 PS_SPACE1   : ' ' -> channel(HIDDEN), mode(Pos2);
 
 mode Pos1;
@@ -204,7 +209,7 @@ POS1        : [0-9] -> type(NUMBER), mode(Keyword);
 
 mode Pos2;
 
-POS2        : [0-9+] [0-9] -> type(NUMBER), mode(Keyword);
+POS2        : [0-9] [0-9] -> type(NUMBER), mode(Keyword);
 
 mode Keyword;
 

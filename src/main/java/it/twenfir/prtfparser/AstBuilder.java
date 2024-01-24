@@ -23,6 +23,8 @@ import it.twenfir.prtfparser.PrtfParser.EntryKeywordsContext;
 import it.twenfir.prtfparser.PrtfParser.FieldContext;
 import it.twenfir.prtfparser.PrtfParser.FileKeywordsContext;
 import it.twenfir.prtfparser.PrtfParser.LabelContext;
+import it.twenfir.prtfparser.PrtfParser.LocValueContext;
+import it.twenfir.prtfparser.PrtfParser.LocationContext;
 import it.twenfir.prtfparser.PrtfParser.OpTermContext;
 import it.twenfir.prtfparser.PrtfParser.PrtfContext;
 import it.twenfir.prtfparser.PrtfParser.RecordContext;
@@ -44,6 +46,7 @@ import it.twenfir.prtfparser.ast.Field;
 import it.twenfir.prtfparser.ast.FileKeywords;
 import it.twenfir.prtfparser.ast.Indicator;
 import it.twenfir.prtfparser.ast.Label;
+import it.twenfir.prtfparser.ast.LocValue;
 import it.twenfir.prtfparser.ast.OpTerm;
 import it.twenfir.prtfparser.ast.Prtf;
 import it.twenfir.prtfparser.ast.RecordKeywords;
@@ -63,6 +66,15 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 		this.listener = listener != null ? listener : new ErrorListenerBase();
 	}
 
+	private LocValue extractLocValue(LocValueContext ctx) {
+		boolean increment = ctx.PLUS() != null;
+		Integer value = null;
+		if ( ctx.NUMBER() != null ) {
+			value = Integer.decode(ctx.NUMBER().getText());
+		}
+		return new LocValue(increment, value);
+	}
+	
 	private Integer extractSkipa(List<SkipaContext> l) {
 		return l.size() > 0 ? Integer.decode(l.get(0).NUMBER().getText()) : null;
 	}
@@ -189,6 +201,22 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         return node;
 	}
 
+	@Override
+	public it.twenfir.prtfparser.ast.Location visitLocation(LocationContext ctx) {
+        Location location = AstHelper.location(ctx);
+        LocValue line = null;
+        LocValue pos = null;
+        if ( ctx.locValue().size() == 2 ) {
+        	line = extractLocValue(ctx.locValue().get(0));
+        }
+        if ( ctx.locValue().size() > 0 ) {
+        	pos = extractLocValue(ctx.locValue().get(ctx.locValue().size() - 1));
+        }
+        it.twenfir.prtfparser.ast.Location node = new it.twenfir.prtfparser.ast.Location(location, line, pos);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+	}
+	
 	@Override
 	public OpTerm visitOpTerm(OpTermContext ctx) {
 		Location location = AstHelper.location(ctx);
