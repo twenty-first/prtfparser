@@ -34,15 +34,15 @@ opTerm		: A_SPEC* ( AND | OR ) term ;
 
 term		: A_SPEC* INDICATOR ( INDICATOR INDICATOR? )? ;
 
-field		: IDENTIFIER REFERENCE? dataType? USAGE? position? fieldKeywords? ;
+field		: IDENTIFIER REFERENCE? dataType? USAGE? position? entryKeywords? ;
 
-label		: position? fieldKeywords ;
+label		: position? entryKeywords ;
 
 dataType 	: ( NUMBER | NUMBER? TYPE ) NUMBER? ;
 
 position	: NUMBER? NUMBER ;
 
-fieldKeywords	: ( dft
+entryKeywords	: ( dft
 				  | date
 				  | editCode
 				  | editWord

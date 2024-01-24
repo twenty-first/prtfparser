@@ -7,20 +7,23 @@ import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
 
 public class Prtf extends AstNode {
-
-	private final boolean indArea;
 	
-    public Prtf(Location location, boolean indArea) {
+    public Prtf(Location location) {
         super(location);
-        this.indArea = indArea;
     }
 	
-	public boolean isIndArea() {
-		return indArea;
+    private FileKeywords getKeywords() {
+    	return getChild(FileKeywords.class);
+    }
+    
+	public Boolean isIndArea() {
+		FileKeywords fk = getKeywords();
+		return fk != null ? fk.isIndArea() : null;
 	}
 
 	public Ref getRef() {
-		return getChild(Ref.class);
+		FileKeywords fk = getKeywords();
+		return fk != null ? fk.getRef() : null;
 	}
 	
 	public Iterator<Record> getRecords() {

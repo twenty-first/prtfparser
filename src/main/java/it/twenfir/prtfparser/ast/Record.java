@@ -9,38 +9,38 @@ import it.twenfir.antlr.ast.Location;
 public class Record extends AstNode {
 
 	private final String name;
-	private final Integer skipAfter;
-	private final Integer skipBefore;
-	private final Integer spaceAfter;
-	private final Integer spaceBefore;
 	
-	public Record(Location location, String name, Integer skipAfter, Integer skipBefore, Integer spaceAfter, Integer spaceBefore) {
+	public Record(Location location, String name) {
 		super(location);
 		this.name = name;
-		this.skipAfter = skipAfter;
-		this.skipBefore = skipBefore;
-		this.spaceAfter = spaceAfter;
-		this.spaceBefore = spaceBefore;
 	}
 	
     public String getName() {
 		return name;
 	}
 
+    private RecordKeywords getKeywords() {
+    	return getChild(RecordKeywords.class);
+    }
+    
 	public Integer getSkipAfter() {
-		return skipAfter;
+		Keywords k = getKeywords();
+		return k != null ? k.getSkipAfter() : null;
 	}
 
 	public Integer getSkipBefore() {
-		return skipBefore;
+		Keywords k = getKeywords();
+		return k != null ? k.getSkipBefore() : null;
 	}
 
 	public Integer getSpaceAfter() {
-		return spaceAfter;
+		Keywords k = getKeywords();
+		return k != null ? k.getSpaceAfter() : null;
 	}
 
 	public Integer getSpaceBefore() {
-		return spaceBefore;
+		Keywords k = getKeywords();
+		return k != null ? k.getSpaceBefore() : null;
 	}
 
 	public String getText() {

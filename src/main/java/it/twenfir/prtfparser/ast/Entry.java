@@ -15,6 +15,30 @@ public abstract class Entry extends AstNode {
 		return condition;
 	}
 
+	private EntryKeywords getKeywords() {
+		return getChild(EntryKeywords.class);
+	}
+    
+	public Integer getSkipAfter() {
+		Keywords k = getKeywords();
+		return k != null ? k.getSkipAfter() : null;
+	}
+
+	public Integer getSkipBefore() {
+		Keywords k = getKeywords();
+		return k != null ? k.getSkipBefore() : null;
+	}
+
+	public Integer getSpaceAfter() {
+		Keywords k = getKeywords();
+		return k != null ? k.getSpaceAfter() : null;
+	}
+
+	public Integer getSpaceBefore() {
+		Keywords k = getKeywords();
+		return k != null ? k.getSpaceBefore() : null;
+	}
+
 	public void setCondition(Condition condition) {
 		this.condition = condition;
 	}

@@ -19,12 +19,22 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
         return visitChildren(node);
     }
 	
-	@Override
+    @Override
+    public ValueT visitEntryKeywords(EntryKeywords node) {
+        return visitChildren(node);
+    }
+
+    @Override
 	public ValueT visitField(Field node) {
         return visitChildren(node);
 	}
 
-	@Override
+    @Override
+    public ValueT visitFileKeywords(FileKeywords node) {
+        return visitChildren(node);
+    }
+
+    @Override
 	public ValueT visitLabel(Label node) {
         return visitChildren(node);
 	}
@@ -44,6 +54,11 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
         return visitChildren(node);
 	}
 	
+	@Override
+	public ValueT visitRecordKeywords(RecordKeywords node) {
+        return visitChildren(node);
+	}
+
 	@Override
 	public ValueT visitRef(Ref node) {
         return visitChildren(node);
