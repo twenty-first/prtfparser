@@ -44,8 +44,8 @@ public class Record extends AstNode {
 	}
 
 	public String getText() {
-		Text t = getChild(Text.class);
-		return t != null ? t.getDescription().getDescription() : null;
+		Keywords k = getKeywords();
+		return k != null ? k.getText() : null;
 	}
 
 	public Iterator<Entry> getEntries() {

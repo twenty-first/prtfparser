@@ -34,7 +34,7 @@ opTerm		: A_SPEC* ( AND | OR ) term ;
 
 term		: A_SPEC* INDICATOR ( INDICATOR INDICATOR? )? ;
 
-field		: IDENTIFIER REFERENCE? dataType? USAGE? position? entryKeywords? ;
+field		: IDENTIFIER REFERENCE? dataType? ( OUTPUT | PROGRAM )? position? entryKeywords? ;
 
 label		: position? entryKeywords ;
 

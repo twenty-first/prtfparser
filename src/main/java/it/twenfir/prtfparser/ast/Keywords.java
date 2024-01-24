@@ -34,4 +34,8 @@ public abstract class Keywords extends AstNode {
 		return spaceBefore;
 	}
 
+	public String getText() {
+		Text t = getChild(Text.class);
+		return t != null ? t.getDescription().getDescription() : null;
+	}
 }

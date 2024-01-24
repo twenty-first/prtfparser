@@ -50,6 +50,7 @@ import it.twenfir.prtfparser.ast.RecordKeywords;
 import it.twenfir.prtfparser.ast.Ref;
 import it.twenfir.prtfparser.ast.Term;
 import it.twenfir.prtfparser.ast.Text;
+import it.twenfir.prtfparser.ast.Usage;
 
 public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 
@@ -164,7 +165,10 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	@Override
 	public Field visitField(FieldContext ctx) {
         Location location = AstHelper.location(ctx);
-        Field node = new Field(location);
+        String name = ctx.IDENTIFIER().getText();
+        boolean reference = ctx.REFERENCE() != null;
+        Usage usage = ctx.PROGRAM() != null ? Usage.PROGRAM : Usage.OUTPUT;
+        Field node = new Field(location, name, reference, usage);
         AstHelper.visitChildren(this, ctx, node);
         return node;
 	}

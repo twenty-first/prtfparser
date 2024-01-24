@@ -15,6 +15,10 @@ public abstract class Entry extends AstNode {
 		return condition;
 	}
 
+	public void setCondition(Condition condition) {
+		this.condition = condition;
+	}
+
 	private EntryKeywords getKeywords() {
 		return getChild(EntryKeywords.class);
 	}
@@ -39,8 +43,9 @@ public abstract class Entry extends AstNode {
 		return k != null ? k.getSpaceBefore() : null;
 	}
 
-	public void setCondition(Condition condition) {
-		this.condition = condition;
+	public String getText() {
+		Keywords k = getKeywords();
+		return k != null ? k.getText() : null;
 	}
 	
 }

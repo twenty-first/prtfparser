@@ -1,6 +1,6 @@
 lexer grammar PrtfLexer;
 
-tokens { A_SPEC, AND, CONSTANT, IDENTIFIER, INDICATOR, LPAR, MINUS, NUMBER, OR, PLUS, QUOTE, RPAR, 
+tokens { A_SPEC, AND, CONSTANT, IDENTIFIER, INDICATOR, LPAR, MINUS, NUMBER, OR, OUTPUT, PLUS, PROGRAM, QUOTE, RPAR, 
 		 STRING, STRING_START, SLASH }
 
 PREFIX      : PREFIX_F -> channel(HIDDEN), pushMode(FormType);
@@ -171,7 +171,8 @@ PR_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Usage;
 
-USAGE       : [OP] -> mode(Location);
+US_OUT      : O_F -> type(OUTPUT), mode(Location);
+US_PROG     : P_F -> type(PROGRAM), mode(Location);
 US_SPACE    : ' ' -> channel(HIDDEN), mode(Location);
 US_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
@@ -314,6 +315,7 @@ fragment PREFIX_F           : ANY_F ANY_F ANY_F ANY_F ANY_F ;
 fragment A_F                : [Aa] ;
 fragment N_F                : [Nn] ;
 fragment O_F                : [Oo] ;
+fragment P_F				: [Pp] ;
 fragment IND_F              : ( N_F | ' ' ) [0-9][0-9] ;
 fragment IDS_F              : [A-Z$\u00a3\u00a7] ;
 fragment IDC_F              : [A-Z0-9$_\u00a3\u00a7] ;
