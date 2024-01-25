@@ -27,6 +27,21 @@ public abstract class Entry extends AstNode {
 		return getChild(EntryKeywords.class);
 	}
     
+	public boolean isDate() {
+		EntryKeywords k = getKeywords();
+		return k != null && k.isDate();
+	}
+	
+	public String getDefault() {
+		EntryKeywords k = getKeywords();
+		return k != null ? k.getDefault() : null;
+	}
+    
+	public boolean isHighlight() {
+		EntryKeywords k = getKeywords();
+		return k != null && k.isHighlight();
+	}
+
 	public Integer getSkipAfter() {
 		Keywords k = getKeywords();
 		return k != null ? k.getSkipAfter() : null;

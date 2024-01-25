@@ -9,6 +9,19 @@ public class EntryKeywords extends Keywords {
 		super(location, skipAfter, skipBefore, spaceAfter, spaceBefore);
 	}
 
+	public boolean isDate() {
+		return getChild(Date.class) != null;
+	}
+	
+	public String getDefault() {
+		Dft t = getChild(Dft.class);
+		return t != null ? t.getDescription().getDescription() : null;
+	}
+
+	public boolean isHighlight() {
+		return getChild(Highlight.class) != null;
+	}
+	
 	public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
 		if ( visitor instanceof PrtfVisitor ) {
 			return ((PrtfVisitor<? extends ValueT>) visitor).visitEntryKeywords(this);
