@@ -185,14 +185,17 @@ LC_SPACE2   : '  ' -> channel(HIDDEN), mode(Line1);
 LC_PLUS2    : ( '+ ' | ' +' ) -> type(PLUS), mode(Line1);
 LC_SPACE1   : ' ' -> channel(HIDDEN), mode(Line2);
 LC_PLUS1    : '+' -> type(PLUS), mode(Line2);
+LC_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Line1;
 
 LINE1       : [0-9] -> type(NUMBER), mode(Position);
+LC1_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Line2;
 
 LINE2       : [0-9] [0-9] -> type(NUMBER), mode(Position);
+LC2_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Position;
 
@@ -202,14 +205,18 @@ PS_PLUS3	: ( '+  ' | ' + ' | '  +' ) -> type(PLUS), mode(Keyword);
 PS_SPACE2   : '  ' -> channel(HIDDEN), mode(Pos1);
 PS_PLUS2    : ( '+ ' | ' +' ) -> type(PLUS), mode(Pos1);
 PS_SPACE1   : ' ' -> channel(HIDDEN), mode(Pos2);
+PS_PLUS1    : '+' -> type(PLUS), mode(Pos2);
+PS_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Pos1;
 
 POS1        : [0-9] -> type(NUMBER), mode(Keyword);
+PS1_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Pos2;
 
 POS2        : [0-9] [0-9] -> type(NUMBER), mode(Keyword);
+PS2_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Keyword;
 
