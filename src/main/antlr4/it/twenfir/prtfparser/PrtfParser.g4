@@ -44,8 +44,8 @@ location	: locValue? locValue ;
 
 locValue	: PLUS? NUMBER ;
 
-entryKeywords	: ( dft
-				  | date
+entryKeywords	: ( date
+				  | dft
 				  | editCode
 				  | editWord
 				  | highlight

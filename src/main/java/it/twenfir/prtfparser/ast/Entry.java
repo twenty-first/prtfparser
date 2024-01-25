@@ -37,9 +37,29 @@ public abstract class Entry extends AstNode {
 		return k != null ? k.getDefault() : null;
 	}
     
+	public String getEditCode() {
+		EntryKeywords k = getKeywords();
+		return k != null ? k.getEditCode() : null;
+	}
+    
+	public String getEditWord() {
+		EntryKeywords k = getKeywords();
+		return k != null ? k.getEditWord() : null;
+	}
+	
 	public boolean isHighlight() {
 		EntryKeywords k = getKeywords();
 		return k != null && k.isHighlight();
+	}
+
+	public boolean isPageNumber() {
+		EntryKeywords k = getKeywords();
+		return k != null && k.isPageNumber();
+	}
+	
+	public RefField getRefField() {
+		EntryKeywords k = getKeywords();
+		return k != null ? k.getRefField() : null;
 	}
 
 	public Integer getSkipAfter() {

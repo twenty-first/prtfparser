@@ -16,10 +16,13 @@ import it.twenfir.antlr.ast.Location;
 import it.twenfir.antlr.ast.Node;
 import it.twenfir.antlr.parser.ErrorListenerBase;
 import it.twenfir.prtfparser.PrtfParser.ConditionContext;
+import it.twenfir.prtfparser.PrtfParser.DataTypeContext;
 import it.twenfir.prtfparser.PrtfParser.DateContext;
 import it.twenfir.prtfparser.PrtfParser.DescriptionContext;
 import it.twenfir.prtfparser.PrtfParser.DescriptionElementContext;
 import it.twenfir.prtfparser.PrtfParser.DftContext;
+import it.twenfir.prtfparser.PrtfParser.EditCodeContext;
+import it.twenfir.prtfparser.PrtfParser.EditWordContext;
 import it.twenfir.prtfparser.PrtfParser.EntryContext;
 import it.twenfir.prtfparser.PrtfParser.EntryKeywordsContext;
 import it.twenfir.prtfparser.PrtfParser.FieldContext;
@@ -29,22 +32,29 @@ import it.twenfir.prtfparser.PrtfParser.LabelContext;
 import it.twenfir.prtfparser.PrtfParser.LocValueContext;
 import it.twenfir.prtfparser.PrtfParser.LocationContext;
 import it.twenfir.prtfparser.PrtfParser.OpTermContext;
+import it.twenfir.prtfparser.PrtfParser.PageNumberContext;
 import it.twenfir.prtfparser.PrtfParser.PrtfContext;
 import it.twenfir.prtfparser.PrtfParser.RecordContext;
 import it.twenfir.prtfparser.PrtfParser.RecordKeywordsContext;
 import it.twenfir.prtfparser.PrtfParser.RefContext;
+import it.twenfir.prtfparser.PrtfParser.RefFieldContext;
 import it.twenfir.prtfparser.PrtfParser.SkipaContext;
 import it.twenfir.prtfparser.PrtfParser.SkipbContext;
 import it.twenfir.prtfparser.PrtfParser.SpaceaContext;
 import it.twenfir.prtfparser.PrtfParser.SpacebContext;
 import it.twenfir.prtfparser.PrtfParser.TermContext;
 import it.twenfir.prtfparser.PrtfParser.TextContext;
+import it.twenfir.prtfparser.PrtfParser.TimeContext;
+import it.twenfir.prtfparser.PrtfParser.UnderlineContext;
 import it.twenfir.prtfparser.ast.CondOp;
 import it.twenfir.prtfparser.ast.Condition;
+import it.twenfir.prtfparser.ast.DataType;
 import it.twenfir.prtfparser.ast.Date;
 import it.twenfir.prtfparser.ast.Description;
 import it.twenfir.prtfparser.ast.DescriptionElement;
-import it.twenfir.prtfparser.ast.Dft;
+import it.twenfir.prtfparser.ast.EditCode;
+import it.twenfir.prtfparser.ast.EditWord;
+import it.twenfir.prtfparser.ast.Default;
 import it.twenfir.prtfparser.ast.Entry;
 import it.twenfir.prtfparser.ast.EntryKeywords;
 import it.twenfir.prtfparser.ast.Field;
@@ -54,11 +64,15 @@ import it.twenfir.prtfparser.ast.Indicator;
 import it.twenfir.prtfparser.ast.Label;
 import it.twenfir.prtfparser.ast.LocValue;
 import it.twenfir.prtfparser.ast.OpTerm;
+import it.twenfir.prtfparser.ast.PageNumber;
 import it.twenfir.prtfparser.ast.Prtf;
 import it.twenfir.prtfparser.ast.RecordKeywords;
 import it.twenfir.prtfparser.ast.Ref;
+import it.twenfir.prtfparser.ast.RefField;
 import it.twenfir.prtfparser.ast.Term;
 import it.twenfir.prtfparser.ast.Text;
+import it.twenfir.prtfparser.ast.Time;
+import it.twenfir.prtfparser.ast.Underline;
 import it.twenfir.prtfparser.ast.Usage;
 
 public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
@@ -111,6 +125,20 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	}
 
 	@Override
+	public DataType visitDataType(DataTypeContext ctx) {
+		Location location = AstHelper.location(ctx);
+		String type = ctx.TYPE() != null ? ctx.TYPE().getText() : null;
+		Integer size = ctx.NUMBER(0) != null ? Integer.parseInt(ctx.NUMBER(0).getText()) : null;
+		Integer precision = ctx.NUMBER(1) != null ? Integer.parseInt(ctx.NUMBER(1).getText()) : null;
+		if ( precision == null && type != null && type.charAt(0) == 'S' ) {
+			precision = 0;
+		}
+		DataType node = new DataType(location, type, size, precision);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
 	public AstNode visitDate(DateContext ctx) {
 		Location location = AstHelper.location(ctx);
 		Date node = new Date(location);
@@ -157,29 +185,26 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	}
 
 	@Override
-	public Dft visitDft(DftContext ctx) {
+	public Default visitDft(DftContext ctx) {
         Location location = AstHelper.location(ctx);
-        Dft node = new Dft(location);
+        Default node = new Default(location);
         AstHelper.visitChildren(this, ctx, node);
         return node;
 	}
 
 	@Override
-	public Highlight visitHighlight(HighlightContext ctx) {
-        Location location = AstHelper.location(ctx);
-        Highlight node = new Highlight(location);
-        AstHelper.visitChildren(this, ctx, node);
-        return node;
-	}
-	
-	@Override
-	public EntryKeywords visitEntryKeywords(EntryKeywordsContext ctx) {
+	public EditCode visitEditCode(EditCodeContext ctx) {
 		Location location = AstHelper.location(ctx);
-        Integer skipa = extractSkipa(ctx.skipa());
-        Integer skipb = extractSkipb(ctx.skipb());
-        Integer spacea = extractSpacea(ctx.spacea());
-        Integer spaceb = extractSpaceb(ctx.spaceb());
-		EntryKeywords node = new EntryKeywords(location, skipa, skipb, spacea, spaceb);
+		String editCode = ctx.EDITCODE().getText();
+		EditCode node = new EditCode(location, editCode);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
+	public EditWord visitEditWord(EditWordContext ctx) {
+		Location location = AstHelper.location(ctx);
+		EditWord node = new EditWord(location);
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}
@@ -205,6 +230,18 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	}
 	
 	@Override
+	public EntryKeywords visitEntryKeywords(EntryKeywordsContext ctx) {
+		Location location = AstHelper.location(ctx);
+        Integer skipa = extractSkipa(ctx.skipa());
+        Integer skipb = extractSkipb(ctx.skipb());
+        Integer spacea = extractSpacea(ctx.spacea());
+        Integer spaceb = extractSpaceb(ctx.spaceb());
+		EntryKeywords node = new EntryKeywords(location, skipa, skipb, spacea, spaceb);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+	
+	@Override
 	public Field visitField(FieldContext ctx) {
         Location location = AstHelper.location(ctx);
         String name = ctx.IDENTIFIER().getText();
@@ -219,6 +256,14 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	public FileKeywords visitFileKeywords(FileKeywordsContext ctx) {
         Location location = AstHelper.location(ctx);
         FileKeywords node = new FileKeywords(location, ctx.indara().size() > 0);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+	}
+
+	@Override
+	public Highlight visitHighlight(HighlightContext ctx) {
+        Location location = AstHelper.location(ctx);
+        Highlight node = new Highlight(location);
         AstHelper.visitChildren(this, ctx, node);
         return node;
 	}
@@ -255,6 +300,14 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}
+	
+    @Override
+    public PageNumber visitPageNumber(PageNumberContext ctx) {
+        Location location = AstHelper.location(ctx);
+        PageNumber node = new PageNumber(location);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+    }
 	
     @Override
     public Prtf visitPrtf(PrtfContext ctx) {
@@ -302,6 +355,29 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	}
 
 	@Override
+	public RefField visitRefField(RefFieldContext ctx) {
+		Location location = AstHelper.location(ctx);
+		String name = ctx.ref_field.getText();
+		String library = null;
+		if ( ctx.ref_lib != null ) {
+			library = ctx.ref_lib.getText();
+		}
+		else if ( ctx.con_lib != null ) {
+			library = ctx.con_lib.getText();
+		}
+		String file = null;
+		if ( ctx.ref_file != null ) {
+			file = ctx.ref_file.getText();
+		}
+		else if ( ctx.con_file != null ) {
+			file = ctx.con_file.getText();
+		}
+		RefField node = new RefField(location, name, library, file);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
 	public Term visitTerm(TermContext ctx) {
 		Location location = AstHelper.location(ctx);
 		List<Indicator> inds = new ArrayList<Indicator>();
@@ -322,6 +398,22 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	public Text visitText(TextContext ctx) {
 		Location location = AstHelper.location(ctx);
 		Text node = new Text(location);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
+	public Time visitTime(TimeContext ctx) {
+		Location location = AstHelper.location(ctx);
+		Time node = new Time(location);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
+	public Underline visitUnderline(UnderlineContext ctx) {
+		Location location = AstHelper.location(ctx);
+		Underline node = new Underline(location);
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}

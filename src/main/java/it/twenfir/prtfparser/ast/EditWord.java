@@ -4,20 +4,19 @@ import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
 
-public class Dft extends AstNode {
+public class EditWord extends AstNode {
 
-	public Dft(Location location) {
+	public EditWord(Location location) {
 		super(location);
 	}
 
 	public Description getDescription() {
 		return getChild(Description.class);
-
 	}
-
+	
     public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
 		if ( visitor instanceof PrtfVisitor ) {
-			return ((PrtfVisitor<? extends ValueT>) visitor).visitDft(this);
+			return ((PrtfVisitor<? extends ValueT>) visitor).visitEditWord(this);
     	}
     	else {
     		return visitor.visit(this);

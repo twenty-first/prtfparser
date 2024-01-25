@@ -10,9 +10,19 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
 	}
 
 	@Override
+	public ValueT visitDataType(DataType node) {
+        return visitChildren(node);
+	}
+
+	@Override
 	public ValueT visitDate(Date node) {
         return visitChildren(node);
 	}
+	
+    @Override
+    public ValueT visitDefault(Default node) {
+        return visitChildren(node);
+    }
 
 	@Override
     public ValueT visitDescription(Description node) {
@@ -23,12 +33,17 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
     public ValueT visitDescriptionElement(DescriptionElement node) {
         return visitChildren(node);
     }
-	
+
     @Override
-    public ValueT visitDft(Dft node) {
+    public ValueT visitEditCode(EditCode node) {
         return visitChildren(node);
     }
 
+    @Override
+    public ValueT visitEditWord(EditWord node) {
+        return visitChildren(node);
+    }
+    
     @Override
     public ValueT visitEntryKeywords(EntryKeywords node) {
         return visitChildren(node);
@@ -64,7 +79,12 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
         return visitChildren(node);
 	}
 
-	@Override
+    @Override
+    public ValueT visitPageNumber(PageNumber node) {
+        return visitChildren(node);
+    }
+
+    @Override
 	public ValueT visitPrtf(Prtf node) {
         return visitChildren(node);
 	}
@@ -83,6 +103,11 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
 	public ValueT visitRef(Ref node) {
         return visitChildren(node);
 	}
+
+	@Override
+	public ValueT visitRefField(RefField node) {
+        return visitChildren(node);
+	}
 	
 	@Override
 	public ValueT visitTerm(Term node) {
@@ -91,6 +116,16 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
 
     @Override
     public ValueT visitText(Text node) {
+        return visitChildren(node);
+    }
+
+    @Override
+    public ValueT visitTime(Time node) {
+        return visitChildren(node);
+    }
+
+    @Override
+    public ValueT visitUnderline(Underline node) {
         return visitChildren(node);
     }
 }
