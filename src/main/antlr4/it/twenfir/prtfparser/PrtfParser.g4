@@ -60,7 +60,11 @@ entryKeywords	: ( date
 				  | underline
 				  )+ ;
 
-date		: A_SPEC* DATE ;
+date		: A_SPEC* DATE ( LPAR ( dateType | dateType? dateSize ) RPAR )?;
+
+dateType	: FC_JOB | FC_SYS ;
+
+dateSize	: FC_Y | FC_YY ;
 
 dft			: A_SPEC* ( DFT LPAR description RPAR | description ) ;
 

@@ -6,8 +6,21 @@ import it.twenfir.antlr.ast.Location;
 
 public class Date extends AstNode {
 
-	public Date(Location location) {
+	private final boolean job;
+	private final int digits;
+	
+	public Date(Location location, boolean job, int digits) {
 		super(location);
+		this.job = job;
+		this.digits = digits;
+	}
+	
+	public boolean isJob() {
+		return job;
+	}
+
+	public int getDigits() {
+		return digits;
 	}
 
 	public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {

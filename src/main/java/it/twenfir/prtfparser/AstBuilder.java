@@ -141,7 +141,9 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	@Override
 	public AstNode visitDate(DateContext ctx) {
 		Location location = AstHelper.location(ctx);
-		Date node = new Date(location);
+		boolean job = ctx.dateType() == null || ctx.dateType().FC_JOB() != null;
+		int digits = ctx.dateSize() == null || ctx.dateSize().FC_Y() != null ? 2 : 4;
+		Date node = new Date(location, job, digits);
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}
