@@ -4,6 +4,7 @@ import it.twenfir.antlr.ast.AstVisitor;
 
 public interface PrtfVisitor<ValueT> extends AstVisitor<ValueT> {
 	ValueT visitCondition(Condition node);
+    ValueT visitCpi(Cpi node);
     ValueT visitDataType(DataType node);
     ValueT visitDate(Date node);
     ValueT visitDefault(Default node);

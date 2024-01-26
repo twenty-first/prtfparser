@@ -16,6 +16,7 @@ import it.twenfir.antlr.ast.Location;
 import it.twenfir.antlr.ast.Node;
 import it.twenfir.antlr.parser.ErrorListenerBase;
 import it.twenfir.prtfparser.PrtfParser.ConditionContext;
+import it.twenfir.prtfparser.PrtfParser.CpiContext;
 import it.twenfir.prtfparser.PrtfParser.DataTypeContext;
 import it.twenfir.prtfparser.PrtfParser.DateContext;
 import it.twenfir.prtfparser.PrtfParser.DescriptionContext;
@@ -48,6 +49,7 @@ import it.twenfir.prtfparser.PrtfParser.TimeContext;
 import it.twenfir.prtfparser.PrtfParser.UnderlineContext;
 import it.twenfir.prtfparser.ast.CondOp;
 import it.twenfir.prtfparser.ast.Condition;
+import it.twenfir.prtfparser.ast.Cpi;
 import it.twenfir.prtfparser.ast.DataType;
 import it.twenfir.prtfparser.ast.Date;
 import it.twenfir.prtfparser.ast.Description;
@@ -124,6 +126,15 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         return node;
 	}
 
+	@Override
+	public Cpi visitCpi(CpiContext ctx) {
+        Location location = AstHelper.location(ctx);
+        int value = Integer.parseInt(ctx.NUMBER().getText());
+        Cpi node = new Cpi(location, value);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+	}
+	
 	@Override
 	public DataType visitDataType(DataTypeContext ctx) {
 		Location location = AstHelper.location(ctx);

@@ -221,6 +221,7 @@ PS2_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 mode Keyword;
 
 ALIAS       : 'ALIAS' ;
+CPI			: 'CPI' ;
 DATE		: 'DATE' ;
 DFT         : 'DFT' ;
 EDTCDE      : 'EDTCDE' -> mode(Edtcde) ;

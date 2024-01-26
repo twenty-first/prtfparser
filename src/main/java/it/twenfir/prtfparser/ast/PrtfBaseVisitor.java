@@ -10,6 +10,11 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
 	}
 
 	@Override
+	public ValueT visitCpi(Cpi node) {
+        return visitChildren(node);
+	}
+
+	@Override
 	public ValueT visitDataType(DataType node) {
         return visitChildren(node);
 	}

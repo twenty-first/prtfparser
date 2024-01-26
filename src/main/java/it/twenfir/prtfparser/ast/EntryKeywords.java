@@ -9,6 +9,11 @@ public class EntryKeywords extends Keywords {
 		super(location, skipAfter, skipBefore, spaceAfter, spaceBefore);
 	}
 
+	public Integer getCpi() {
+		Cpi c = getChild(Cpi.class);
+		return c != null ? c.getValue() : null;
+	}
+	
 	public boolean isDate() {
 		return getChild(Date.class) != null;
 	}

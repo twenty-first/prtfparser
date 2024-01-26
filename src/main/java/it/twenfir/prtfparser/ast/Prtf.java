@@ -16,9 +16,9 @@ public class Prtf extends AstNode {
     	return getChild(FileKeywords.class);
     }
     
-	public Boolean isIndArea() {
+	public boolean isIndArea() {
 		FileKeywords fk = getKeywords();
-		return fk != null ? fk.isIndArea() : null;
+		return fk != null && fk.isIndArea();
 	}
 
 	public Ref getRef() {

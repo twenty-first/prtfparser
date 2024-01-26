@@ -44,7 +44,8 @@ location	: locValue? locValue ;
 
 locValue	: PLUS? NUMBER ;
 
-entryKeywords	: ( date
+entryKeywords	: ( cpi
+				  | date
 				  | dft
 				  | editCode
 				  | editWord
@@ -59,6 +60,8 @@ entryKeywords	: ( date
 				  | time
 				  | underline
 				  )+ ;
+
+cpi			: A_SPEC* CPI LPAR NUMBER RPAR ;
 
 date		: A_SPEC* DATE ( LPAR ( dateType | dateType? dateSize ) RPAR )?;
 
