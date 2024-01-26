@@ -84,7 +84,7 @@ pageNumber	: A_SPEC* PAGNBR ;
 ref			: A_SPEC* REF LPAR ( ( refLib = IDENTIFIER | CONSTANT ) SLASH )? refFile = IDENTIFIER RPAR ;
 
 refField 	: A_SPEC* REFFLD LPAR 
-	        ref_field = IDENTIFIER 
+	        ( ref_format = IDENTIFIER SLASH )? ref_field = IDENTIFIER 
 	        ( ( ( ref_lib = IDENTIFIER | con_lib = CONSTANT ) SLASH )?
 	          ( ref_file = IDENTIFIER | con_file = CONSTANT )
 	        )?

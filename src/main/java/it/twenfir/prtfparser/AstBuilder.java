@@ -370,6 +370,10 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	@Override
 	public RefField visitRefField(RefFieldContext ctx) {
 		Location location = AstHelper.location(ctx);
+		String format = null;
+		if ( ctx.ref_format != null ) {
+			format = ctx.ref_format.getText();
+		}
 		String name = ctx.ref_field.getText();
 		String library = null;
 		if ( ctx.ref_lib != null ) {
@@ -385,7 +389,7 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 		else if ( ctx.con_file != null ) {
 			file = ctx.con_file.getText();
 		}
-		RefField node = new RefField(location, name, library, file);
+		RefField node = new RefField(location, format, name, library, file);
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}
