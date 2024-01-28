@@ -5,12 +5,12 @@
     <parent>
         <groupId>it.twenfir</groupId>
         <artifactId>twenfir-bom</artifactId>
-        <version>0.1.0</version>    
+        <version>0.0.7</version>    
     </parent>
 
     <groupId>it.twenfir</groupId>
     <artifactId>prtfparser</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <name>prtfparser</name>
     <description>An ANTLR4 parser for IBM's Print File Specifications</description>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>it.twenfir</groupId>
             <artifactId>twenfir-antlr</artifactId>
-            <version>0.1.2</version>
+            <version>0.0.11-SNAPSHOT</version>
         </dependency>
          <dependency>
             <groupId>org.antlr</groupId>
