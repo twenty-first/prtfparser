@@ -38,24 +38,18 @@ public class PrtfParserDriver extends ParserDriverBase {
         PrtfLexer lexer = new PrtfLexer(inputStream);
     	lexer.removeErrorListeners();
     	lexer.addErrorListener(this.listener);
-//    	if ( listener != null ) {
-//    		lexer.addErrorListener(listener);
-//    	}
         LoggingTokenSource source = new LoggingTokenSource(lexer);
         tokenStream = new CommonTokenStream(source);
         parser = new PrtfParser(tokenStream);
     	parser.removeErrorListeners();
     	parser.addErrorListener(this.listener);
-//    	if ( listener != null ) {
-//    		parser.addErrorListener(listener);
-//    	}
 	}
 	
     public PrtfContext parse() {
 		if ( parseTree == null ) {
 			parseTree = parser.prtf();
 		}
-		if ( isErrors() ) {
+		if ( listener.isErrors() ) {
 			throw new ParseException("Parse failed");
 		}
 		return parseTree;

@@ -14,7 +14,7 @@ import it.twenfir.antlr.ast.AstHelper;
 import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.Location;
 import it.twenfir.antlr.ast.Node;
-import it.twenfir.antlr.parser.ErrorListenerBase;
+import it.twenfir.antlr.parser.DefaultErrorListener;
 import it.twenfir.prtfparser.PrtfParser.ConditionContext;
 import it.twenfir.prtfparser.PrtfParser.CpiContext;
 import it.twenfir.prtfparser.PrtfParser.DataTypeContext;
@@ -52,11 +52,11 @@ import it.twenfir.prtfparser.ast.Condition;
 import it.twenfir.prtfparser.ast.Cpi;
 import it.twenfir.prtfparser.ast.DataType;
 import it.twenfir.prtfparser.ast.Date;
+import it.twenfir.prtfparser.ast.Default;
 import it.twenfir.prtfparser.ast.Description;
 import it.twenfir.prtfparser.ast.DescriptionElement;
 import it.twenfir.prtfparser.ast.EditCode;
 import it.twenfir.prtfparser.ast.EditWord;
-import it.twenfir.prtfparser.ast.Default;
 import it.twenfir.prtfparser.ast.Entry;
 import it.twenfir.prtfparser.ast.EntryKeywords;
 import it.twenfir.prtfparser.ast.Field;
@@ -85,7 +85,7 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	private ErrorListener listener;
 
 	public AstBuilder(ErrorListener listener) {
-		this.listener = listener != null ? listener : new ErrorListenerBase();
+		this.listener = listener != null ? listener : new DefaultErrorListener();
 	}
 
 	private LocValue extractLocValue(LocValueContext ctx) {
