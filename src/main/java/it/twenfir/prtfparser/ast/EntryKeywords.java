@@ -5,8 +5,11 @@ import it.twenfir.antlr.ast.Location;
 
 public class EntryKeywords extends Keywords {
 
-	public EntryKeywords(Location location, Integer skipAfter, Integer skipBefore, Integer spaceAfter, Integer spaceBefore) {
+	private final String dateFormat;
+	
+	public EntryKeywords(Location location, String dateFormat, Integer skipAfter, Integer skipBefore, Integer spaceAfter, Integer spaceBefore) {
 		super(location, skipAfter, skipBefore, spaceAfter, spaceBefore);
+		this.dateFormat = dateFormat;
 	}
 
 	public Integer getCpi() {
@@ -16,6 +19,9 @@ public class EntryKeywords extends Keywords {
 	
 	public boolean isDate() {
 		return getChild(Date.class) != null;
+	}
+	public String getDateFormat() {
+		return dateFormat;
 	}
 	
 	public String getDefault() {

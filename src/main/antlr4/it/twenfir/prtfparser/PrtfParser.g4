@@ -9,6 +9,7 @@ prtf	: fileKeywords? record+ EOF ;
 
 fileKeywords	: ( indara
 				  | ref
+				  | relpos
 				  )+
 				  ;
 
@@ -26,7 +27,7 @@ recordKeywords	: ( skipa
 				  )+
 				  ;
 
-entry		: A_SPEC* condition? ( field | label ) ;
+entry		: A_SPEC* condition* ( field | label ) ;
 
 condition	: term opTerm* ;
 
@@ -46,6 +47,7 @@ locValue	: PLUS? NUMBER ;
 
 entryKeywords	: ( cpi
 				  | date
+				  | datfmt
 				  | dft
 				  | editCode
 				  | editWord
@@ -64,6 +66,8 @@ entryKeywords	: ( cpi
 cpi			: A_SPEC* CPI LPAR NUMBER RPAR ;
 
 date		: A_SPEC* DATE ( LPAR ( dateType | dateType? dateSize ) RPAR )?;
+
+datfmt		: A_SPEC* DATFMT LPAR FC_EUR RPAR ;
 
 dateType	: FC_JOB | FC_SYS ;
 
@@ -90,6 +94,8 @@ refField 	: A_SPEC* REFFLD LPAR
 	        )?
 	        RPAR
 	        ;
+
+relpos      : A_SPEC* RELPOS ;
 
 skipa		: A_SPEC* SKIPA LPAR NUMBER RPAR ;
 

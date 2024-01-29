@@ -1,6 +1,7 @@
 package it.twenfir.prtfparser;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -227,15 +228,15 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         Location location = AstHelper.location(ctx);
 		Node node = new Node(location);
         AstHelper.visitChildren(this, ctx, node);
-        Condition c = node.getChild(Condition.class);
+        Iterator<Condition> ci = node.getChildren(Condition.class);
         Field f = node.getChild(Field.class);
         if ( f != null ) {
-        	f.setCondition(c);
+        	f.setConditions(ci);
         	return f;
         }
         Label l = node.getChild(Label.class);
         if ( l != null ) {
-        	l.setCondition(c);
+        	l.setConditions(ci);
         	return l;
         }
         listener.astError(node, "Unhandled Entry: " + node);
@@ -245,11 +246,12 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	@Override
 	public EntryKeywords visitEntryKeywords(EntryKeywordsContext ctx) {
 		Location location = AstHelper.location(ctx);
+		String dateFormat = ctx.datfmt().size() > 0 ? ctx.datfmt().get(0).FC_EUR().getText() : null;
         Integer skipa = extractSkipa(ctx.skipa());
         Integer skipb = extractSkipb(ctx.skipb());
         Integer spacea = extractSpacea(ctx.spacea());
         Integer spaceb = extractSpaceb(ctx.spaceb());
-		EntryKeywords node = new EntryKeywords(location, skipa, skipb, spacea, spaceb);
+		EntryKeywords node = new EntryKeywords(location, dateFormat, skipa, skipb, spacea, spaceb);
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}
@@ -268,7 +270,8 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	@Override
 	public FileKeywords visitFileKeywords(FileKeywordsContext ctx) {
         Location location = AstHelper.location(ctx);
-        FileKeywords node = new FileKeywords(location, ctx.indara().size() > 0);
+        FileKeywords node = new FileKeywords(location, ctx.indara().size() > 0, 
+        		ctx.relpos().size() > 0);
         AstHelper.visitChildren(this, ctx, node);
         return node;
 	}
