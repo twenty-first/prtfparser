@@ -1,22 +1,28 @@
 package it.twenfir.prtfparser.ast;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.Location;
 
 public abstract class Entry extends AstNode {
 
-	private Condition condition;
+	private List<Condition> conditions = new ArrayList<Condition>();
 	
 	public Entry(Location location) {
 		super(location);
 	}
 
-	public Condition getCondition() {
-		return condition;
+	public Iterator<Condition> getConditions() {
+		return conditions.iterator();
 	}
 
-	public void setCondition(Condition condition) {
-		this.condition = condition;
+	public void setConditions(Iterator<Condition> condIter) {
+		while ( condIter.hasNext() ) {
+			conditions.add(condIter.next());
+		}
 	}
 
 	public it.twenfir.prtfparser.ast.Location getLocation() {
