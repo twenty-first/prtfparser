@@ -10,7 +10,7 @@
 
     <groupId>it.twenfir</groupId>
     <artifactId>prtfparser</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
 
     <name>prtfparser</name>
     <description>An ANTLR4 parser for IBM's Print File Specifications</description>
@@ -124,7 +124,7 @@
         <connection>scm:git:git@github.com:twenty-first/prtfparser.git</connection>
         <developerConnection>scm:git:git@github.com:twenty-first/prtfparser.git</developerConnection>
         <url>https://github.com/twenty-first/prtfparser.git</url>
-      <tag>v0.0.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
 </project>
