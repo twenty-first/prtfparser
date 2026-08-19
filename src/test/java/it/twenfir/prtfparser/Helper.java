@@ -13,7 +13,7 @@ public class Helper {
 		this.log = log;
 	}
 	
-	private PrtfParserDriver driver(String src) {
+	public PrtfParserDriver driver(String src) {
 		return new PrtfParserDriver(src);
 	}
 	

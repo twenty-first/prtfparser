@@ -4,22 +4,22 @@ import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
 
-public class Cpi extends AstNode {
+public class HexStringElement extends AstNode {
 
-	private final Integer value;
+	private String value;
 	
-	public Cpi(Location location, Integer value) {
+	public HexStringElement(Location location, String value) {
 		super(location);
 		this.value = value;
 	}
-
-	public Integer getValue() {
+	
+	public String getValue() {
 		return value;
 	}
-
-	public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
+	
+    public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
 		if ( visitor instanceof PrtfVisitor ) {
-			return ((PrtfVisitor<? extends ValueT>) visitor).visitCpi(this);
+			return ((PrtfVisitor<? extends ValueT>) visitor).visitHexStringElement(this);
     	}
     	else {
     		return visitor.visit(this);

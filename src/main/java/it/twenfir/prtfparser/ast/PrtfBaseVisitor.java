@@ -5,6 +5,16 @@ import it.twenfir.antlr.ast.BaseAstVisitor;
 public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements PrtfVisitor<ValueT> {
 
 	@Override
+	public ValueT visitBarcode(Barcode node) {
+        return visitChildren(node);
+	}
+	
+	@Override
+	public ValueT visitChrid(Chrid node) {
+        return visitChildren(node);
+	}
+	
+	@Override
 	public ValueT visitCondition(Condition node) {
         return visitChildren(node);
 	}
@@ -65,6 +75,21 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
     }
 
     @Override
+    public ValueT visitFont(Font node) {
+        return visitChildren(node);
+    }
+
+    @Override
+    public ValueT visitHexString(HexString node) {
+        return visitChildren(node);
+    }
+
+    @Override
+    public ValueT visitHexStringElement(HexStringElement node) {
+        return visitChildren(node);
+    }
+    
+    @Override
     public ValueT visitHighlight(Highlight node) {
         return visitChildren(node);
     }
@@ -89,6 +114,11 @@ public class PrtfBaseVisitor<ValueT> extends BaseAstVisitor<ValueT> implements P
         return visitChildren(node);
     }
 
+    @Override
+    public ValueT visitPagseg(Pagseg node) {
+        return visitChildren(node);
+    }
+    
     @Override
 	public ValueT visitPrtf(Prtf node) {
         return visitChildren(node);

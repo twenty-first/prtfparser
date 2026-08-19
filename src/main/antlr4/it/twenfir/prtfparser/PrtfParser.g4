@@ -19,7 +19,9 @@ record	: A_SPEC* RECORD ( recordName = IDENTIFIER )
 		  A_SPEC*
 		  ;
 
-recordKeywords	: ( skipa
+recordKeywords	: ( highlight
+                  | pagseg
+                  | skipa
 				  | skipb
 				  | spacea
 				  | spaceb
@@ -39,18 +41,21 @@ field		: IDENTIFIER REFERENCE? dataType? ( OUTPUT | PROGRAM )? location? entryKe
 
 label		: location? entryKeywords ;
 
-dataType 	: ( NUMBER | NUMBER? TYPE ) NUMBER? ;
+dataType 	: ( length | length? TYPE ) precision? ;
 
 location	: locValue? locValue ;
 
-locValue	: PLUS? NUMBER ;
+locValue	: PLUS? number ;
 
-entryKeywords	: ( cpi
+entryKeywords	: ( barcode
+                  | chrid
+                  | cpi
 				  | date
 				  | datfmt
 				  | dft
 				  | editCode
 				  | editWord
+				  | font
 				  | highlight
 				  | pageNumber
 				  | refField
@@ -63,7 +68,11 @@ entryKeywords	: ( cpi
 				  | underline
 				  )+ ;
 
-cpi			: A_SPEC* CPI LPAR NUMBER RPAR ;
+barcode     : A_SPEC* BARCODE LPAR IDENTIFIER number FC_HRI A_SPEC* LPAR FC_WIDTH number RPAR A_SPEC* LPAR FC_RATIO number RPAR hexString RPAR ;
+
+chrid       : A_SPEC* CHRID ;
+
+cpi			: A_SPEC* CPI LPAR number RPAR ;
 
 date		: A_SPEC* DATE ( LPAR ( dateType | dateType? dateSize ) RPAR )?;
 
@@ -77,7 +86,9 @@ dft			: A_SPEC* ( DFT LPAR description RPAR | description ) ;
 
 editCode	: A_SPEC* EDTCDE LPAR EDITCODE RPAR ;
 
-editWord : A_SPEC* EDTWRD LPAR description RPAR ;
+editWord    : A_SPEC* EDTWRD LPAR description RPAR ;
+
+font        : A_SPEC* FONT LPAR number LPAR FC_POINTSIZE number RPAR RPAR ;
 
 highlight	: A_SPEC* HIGHLIGHT ;
 
@@ -97,13 +108,15 @@ refField 	: A_SPEC* REFFLD LPAR
 
 relpos      : A_SPEC* RELPOS ;
 
-skipa		: A_SPEC* SKIPA LPAR NUMBER RPAR ;
+pagseg      : A_SPEC* PAGSEG LPAR IDENTIFIER number number RPAR ;
 
-skipb		: A_SPEC* SKIPB LPAR NUMBER RPAR ;
+skipa		: A_SPEC* SKIPA LPAR number RPAR ;
 
-spacea		: A_SPEC* SPACEA LPAR NUMBER RPAR ;
+skipb		: A_SPEC* SKIPB LPAR number RPAR ;
 
-spaceb		: A_SPEC* SPACEB LPAR NUMBER RPAR ;
+spacea		: A_SPEC* SPACEA LPAR number RPAR ;
+
+spaceb		: A_SPEC* SPACEB LPAR number RPAR ;
 
 text		: A_SPEC* TEXT LPAR description RPAR ;
 
@@ -114,3 +127,13 @@ underline	: A_SPEC* UNDERLINE ;
 description : descriptionElement ( ( MINUS | PLUS )? A_SPEC* descriptionElement )* ;
 
 descriptionElement : QUOTE ( STRING_START A_SPEC* )* STRING? QUOTE ;
+
+hexString : hexStringElement ( ( MINUS | PLUS )? A_SPEC* hexStringElement )* ;
+
+hexStringElement : XQUOTE ( XSTRING_START A_SPEC* )* XSTRING? QUOTE ;
+
+number : NUMBER ;
+
+length : LENGTH ;
+
+precision : PRECISION ;

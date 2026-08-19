@@ -1,10 +1,14 @@
 package it.twenfir.prtfparser;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.twenfir.antlr.exception.ParseException;
+import it.twenfir.prtfparser.PrtfParser.DataTypeContext;
+import it.twenfir.prtfparser.PrtfParser.PrtfContext;
 
 public class ParserUnitTests extends TestBase {
 
@@ -71,5 +75,15 @@ public class ParserUnitTests extends TestBase {
 				"     A                                     1\n" +
 				"     A                                      'N'";
 		helper.parse(src);
+	}
+	
+	@Test
+	public void testStringRecognizedAsPacked() {
+		String src =
+				"     A          R TESTPRTF\n" +
+				"     A            FLGSTP         2         1";
+		PrtfContext pc = helper.parse(src);
+		DataTypeContext dt = pc.record(0).entry(0).field().dataType();
+		assertNull(dt.precision());
 	}
 }

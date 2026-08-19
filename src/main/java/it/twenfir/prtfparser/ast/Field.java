@@ -2,8 +2,9 @@ package it.twenfir.prtfparser.ast;
 
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
+import it.twenfir.parser.ast.CommonField;
 
-public class Field extends Entry {
+public class Field extends Entry implements CommonField {
 
 	private final String name;
 	private final boolean reference;
@@ -26,6 +27,15 @@ public class Field extends Entry {
 
 	public Usage getUsage() {
 		return usage;
+	}
+
+	public DataType getDataType() {
+		return getChild(DataType.class);
+	}
+	
+	public RefField getRefField() {
+		EntryKeywords ek = getChild(EntryKeywords.class);
+		return ek != null ? ek.getChild(RefField.class) : null;
 	}
 
 	public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {

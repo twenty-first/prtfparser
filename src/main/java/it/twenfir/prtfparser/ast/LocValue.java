@@ -1,11 +1,13 @@
 package it.twenfir.prtfparser.ast;
 
+import java.math.BigDecimal;
+
 public class LocValue {
 
 	private final boolean increment;
-	private final Integer value;
+	private final BigDecimal value;
 
-	public LocValue(boolean increment, Integer value) {
+	public LocValue(boolean increment, BigDecimal value) {
 		this.increment = increment;
 		this.value = value;
 	}
@@ -14,7 +16,7 @@ public class LocValue {
 		return increment;
 	}
 
-	public Integer getValue() {
+	public BigDecimal getValue() {
 		return value;
 	}
 

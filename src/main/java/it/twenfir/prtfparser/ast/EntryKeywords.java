@@ -7,19 +7,29 @@ public class EntryKeywords extends Keywords {
 
 	private final String dateFormat;
 	
-	public EntryKeywords(Location location, String dateFormat, Integer skipAfter, Integer skipBefore, Integer spaceAfter, Integer spaceBefore) {
+	public EntryKeywords(Location location, String dateFormat, Integer skipAfter, 
+			Integer skipBefore, Integer spaceAfter, Integer spaceBefore) {
 		super(location, skipAfter, skipBefore, spaceAfter, spaceBefore);
 		this.dateFormat = dateFormat;
 	}
 
+	public Barcode getBarcode() {
+		return getChild(Barcode.class);
+	}
+	
+	public boolean isChrid() {
+		return getChild(Chrid.class) != null;
+	}
+	
 	public Integer getCpi() {
 		Cpi c = getChild(Cpi.class);
 		return c != null ? c.getValue() : null;
 	}
 	
-	public boolean isDate() {
-		return getChild(Date.class) != null;
+	public Date getDate() {
+		return getChild(Date.class);
 	}
+	
 	public String getDateFormat() {
 		return dateFormat;
 	}
@@ -39,8 +49,8 @@ public class EntryKeywords extends Keywords {
 		return ew != null ? ew.getDescription().getDescription() : null;
 	}
 	
-	public boolean isHighlight() {
-		return getChild(Highlight.class) != null;
+	public Font getFont() {
+		return getChild(Font.class);
 	}
 	
 	public boolean isPageNumber() {

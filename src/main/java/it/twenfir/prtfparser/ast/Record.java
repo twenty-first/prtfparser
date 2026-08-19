@@ -2,11 +2,10 @@ package it.twenfir.prtfparser.ast;
 
 import java.util.Iterator;
 
-import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
 
-public class Record extends AstNode {
+public class Record extends KeywordNode {
 
 	private final String name;
 	
@@ -19,35 +18,15 @@ public class Record extends AstNode {
 		return name;
 	}
 
-    private RecordKeywords getKeywords() {
+    @Override
+    public RecordKeywords getKeywords() {
     	return getChild(RecordKeywords.class);
     }
+
+    public Pagseg getPagseg() {
+    	return getChild(Pagseg.class);
+    }
     
-	public Integer getSkipAfter() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSkipAfter() : null;
-	}
-
-	public Integer getSkipBefore() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSkipBefore() : null;
-	}
-
-	public Integer getSpaceAfter() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSpaceAfter() : null;
-	}
-
-	public Integer getSpaceBefore() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSpaceBefore() : null;
-	}
-
-	public String getText() {
-		Keywords k = getKeywords();
-		return k != null ? k.getText() : null;
-	}
-
 	public Iterator<Entry> getEntries() {
 		return getChildren(Entry.class);
 	}
