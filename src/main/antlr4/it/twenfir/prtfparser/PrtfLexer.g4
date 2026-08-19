@@ -1,7 +1,7 @@
 lexer grammar PrtfLexer;
 
-tokens { A_SPEC, AND, CONSTANT, IDENTIFIER, INDICATOR, LPAR, MINUS, NUMBER, OR, OUTPUT, PLUS, PROGRAM, QUOTE, RPAR, 
-		 STRING, STRING_START, SLASH }
+tokens { A_SPEC, AND, CONSTANT, IDENTIFIER, INDICATOR, LENGTH, LPAR, MINUS, NUMBER, OR, OUTPUT, PLUS,
+         PRECISION, PROGRAM, QUOTE, RPAR, STRING, STRING_START, SLASH, XQUOTE, XSTRING, XSTRING_START }
 
 PREFIX      : PREFIX_F -> channel(HIDDEN), pushMode(FormType);
 PART_PREF   : ( ANY_F
@@ -123,7 +123,7 @@ RF_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Length;
 
-LEN5        : [0-9+-] [0-9] [0-9] [0-9] [0-9] -> type(NUMBER), mode(DataType);
+LEN5        : [0-9+-] [0-9] [0-9] [0-9] [0-9] -> type(LENGTH), mode(DataType);
 LN1_SPACE   : ' ' -> channel(HIDDEN), mode(Len4);
 LN2_SPACE   : '  ' -> channel(HIDDEN), mode(Len3);
 LN2_PLUS    : '+ ' -> type(PLUS), mode(Len3);
@@ -137,22 +137,22 @@ LN_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Len4;
 
-LEN4        : [0-9+-] [0-9] [0-9] [0-9] -> type(NUMBER), mode(DataType);
+LEN4        : [0-9+-] [0-9] [0-9] [0-9] -> type(LENGTH), mode(DataType);
 LN4_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Len3;
 
-LEN3        : [0-9+-] [0-9] [0-9] -> type(NUMBER), mode(DataType);
+LEN3        : [0-9+-] [0-9] [0-9] -> type(LENGTH), mode(DataType);
 LN3_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Len2;
 
-LEN2        : [0-9+-] [0-9] -> type(NUMBER), mode(DataType);
+LEN2        : [0-9+-] [0-9] -> type(LENGTH), mode(DataType);
 LN2_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Len1;
 
-LEN1        : [0-9] -> type(NUMBER), mode(DataType);
+LEN1        : [0-9] -> type(LENGTH), mode(DataType);
 LN1_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode DataType;
@@ -163,8 +163,8 @@ DT_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Precision;
 
-PREC2       : [0-9] [0-9] -> type(NUMBER), mode(Usage);
-PREC1       : [0-9] -> type(NUMBER), mode(Usage);
+PREC2       : [0-9] [0-9] -> type(PRECISION), mode(Usage);
+PREC1       : [0-9] -> type(PRECISION), mode(Usage);
 PR_SPACE2   : '  ' -> channel(HIDDEN), mode(Usage);
 PR_SPACE1   : ' ' -> channel(HIDDEN);
 PR_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
@@ -221,6 +221,8 @@ PS2_EOL     : EOL_F+ -> channel(HIDDEN), popMode;
 mode Keyword;
 
 ALIAS       : 'ALIAS' ;
+BARCODE     : 'BARCODE' ;
+CHRID       : 'CHRID' ;
 CPI			: 'CPI' ;
 DATE		: 'DATE' ;
 DATFMT		: 'DATFMT' ;
@@ -243,12 +245,13 @@ TEXT        : 'TEXT' ;
 TIME		: 'TIME' ;
 UNDERLINE	: 'UNDERLINE' ;
 
-KW_LPAR     : '(' -> type(LPAR), mode(Expression);
-KW_QUOTE        : '\'' -> type(QUOTE), pushMode(String);
+KW_LPAR     : '(' -> type(LPAR), pushMode(Expression);
+KW_QUOTE    : '\'' -> type(QUOTE), pushMode(String);
+KW_XQUOTE   : XQUOTE_F -> type(XQUOTE), pushMode(HexString);
 KW_SPACE    : ' '+ -> channel(HIDDEN);
 KW_EOL      : EOL_F+ -> channel(HIDDEN), popMode;
-MINUS          : '-' -> mode(KeywordCont);
-PLUS           : '+' -> mode(KeywordCont);
+MINUS       : '-' -> mode(KeywordCont);
+PLUS        : '+' -> mode(KeywordCont);
 
 mode KeywordCont;
 
@@ -256,15 +259,22 @@ KC_EOL   : EOL_F+ -> channel(HIDDEN), popMode;
 
 mode Expression;
 
-EX_RPAR         : ')' -> type(RPAR), mode(Keyword);
+EX_RPAR         : ')' -> type(RPAR), popMode;
+EX_LPAR         : '(' -> type(LPAR), pushMode(Expression);
 REL_OP          : 'EQ' | 'NE' | 'LT' | 'NL' | 'GT' | 'NG' | 'LE' | 'GE' ;
+EX_XQUOTE       : XQUOTE_F -> type(XQUOTE), pushMode(HexString);
 EX_IDENTIFIER   : IDENTIFIER_F -> type(IDENTIFIER);
+
 FC_EUR			: '*EUR' ;
+FC_HRI          : '*HRI' ;
 FC_JOB			: '*JOB' ;
 FC_POINTSIZE    : '*POINTSIZE' ;
+FC_RATIO        : '*RATIO' ;
 FC_SYS			: '*SYS' ;
+FC_WIDTH        : '*WIDTH' ;
 FC_Y			: '*Y' ;
 FC_YY			: '*YY' ;
+
 EX_CONSTANT     : CONSTANT_F -> type(CONSTANT);
 EX_SPACE        : ' '+ -> channel(HIDDEN);
 EX_SLASH        : '/' -> type(SLASH);
@@ -272,7 +282,7 @@ EX_NUMBER       : NUMBER_F -> type(NUMBER);
 EX_QUOTE        : '\'' -> type(QUOTE), pushMode(String);
 EX_PLUS			: '+' -> type(PLUS);
 EX_MINUS		: '-' -> type(MINUS);
-EX_EOL			: EOL_F+ -> channel(HIDDEN), mode(ExprPref);
+EX_EOL			: [-+]? EOL_F+ -> channel(HIDDEN), mode(ExprPref);
 
 mode ExprPref;
 
@@ -330,6 +340,32 @@ mode StringSpecPlus;
 SSP_A_SPEC  : A_F -> type(A_SPEC);
 SSP_SPACE   : ' '+ -> channel(HIDDEN), mode(String);
 
+mode HexString;
+
+XSTRING_START_MINUS : XSTRING_START_F '-' EOL_F -> type(XSTRING_START), mode(HexStringPrfMinus);
+XSTRING_START_PLUS  : XSTRING_START_F '+' EOL_F -> type(XSTRING_START), mode(HexStringPrfPlus);
+XSTRING_START_EMPTY : XSTRING_START_F EOL_F -> type(XSTRING_START), mode(HexStringPrfPlus);
+XSTRING             : XSTRING_START_F [+-]? -> type(XSTRING);
+XST_QUOTE           : '\'' -> type(QUOTE), popMode;
+
+mode HexStringPrfMinus;
+
+XSPM_PREFIX  : PREFIX_F -> channel(HIDDEN), mode(HexStringSpecMinus);
+
+mode HexStringSpecMinus;
+
+XSSM_A_SPEC  : A_F -> type(A_SPEC);
+XSSM_SPACE   : '                                      ' -> channel(HIDDEN), mode(HexString);
+
+mode HexStringPrfPlus;
+
+XSPP_PREFIX  : PREFIX_F -> channel(HIDDEN), mode(HexStringSpecPlus);
+
+mode HexStringSpecPlus;
+
+XSSP_A_SPEC  : A_F -> type(A_SPEC);
+XSSP_SPACE   : ' '+ -> channel(HIDDEN), mode(HexString);
+
 // Common fragments
 
 fragment ANY_F              : ~[\r\n] ;
@@ -344,5 +380,7 @@ fragment IDS_F              : [A-Z$\u00a3\u00a7] ;
 fragment IDC_F              : [A-Z0-9$_\u00a3\u00a7] ;
 fragment IDENTIFIER_F       : IDS_F IDC_F* ;
 fragment CONSTANT_F         : '*'[A-Z][A-Z0-9_]* ;
-fragment NUMBER_F           : [+-]? [0-9]+;
-fragment STRING_START_F       : ((~[\r\n'])|('\'\''))+ ;
+fragment NUMBER_F           : [+-]? [0-9]+ ( ( '.' | ',' ) [0-9]+ )?;
+fragment STRING_START_F     : ((~[\r\n'])|('\'\''))+ ;
+fragment XQUOTE_F           : 'X' '\'' ;
+fragment XSTRING_START_F    : ((~[\r\n'])|('\'\''))+ ;

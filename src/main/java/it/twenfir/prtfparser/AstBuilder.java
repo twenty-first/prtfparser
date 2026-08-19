@@ -1,5 +1,6 @@
 package it.twenfir.prtfparser;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +16,10 @@ import it.twenfir.antlr.ast.AstHelper;
 import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.Location;
 import it.twenfir.antlr.ast.Node;
+import it.twenfir.antlr.exception.AstException;
 import it.twenfir.antlr.parser.DefaultErrorListener;
+import it.twenfir.prtfparser.PrtfParser.BarcodeContext;
+import it.twenfir.prtfparser.PrtfParser.ChridContext;
 import it.twenfir.prtfparser.PrtfParser.ConditionContext;
 import it.twenfir.prtfparser.PrtfParser.CpiContext;
 import it.twenfir.prtfparser.PrtfParser.DataTypeContext;
@@ -29,12 +33,17 @@ import it.twenfir.prtfparser.PrtfParser.EntryContext;
 import it.twenfir.prtfparser.PrtfParser.EntryKeywordsContext;
 import it.twenfir.prtfparser.PrtfParser.FieldContext;
 import it.twenfir.prtfparser.PrtfParser.FileKeywordsContext;
+import it.twenfir.prtfparser.PrtfParser.FontContext;
+import it.twenfir.prtfparser.PrtfParser.HexStringContext;
+import it.twenfir.prtfparser.PrtfParser.HexStringElementContext;
 import it.twenfir.prtfparser.PrtfParser.HighlightContext;
 import it.twenfir.prtfparser.PrtfParser.LabelContext;
 import it.twenfir.prtfparser.PrtfParser.LocValueContext;
 import it.twenfir.prtfparser.PrtfParser.LocationContext;
+import it.twenfir.prtfparser.PrtfParser.NumberContext;
 import it.twenfir.prtfparser.PrtfParser.OpTermContext;
 import it.twenfir.prtfparser.PrtfParser.PageNumberContext;
+import it.twenfir.prtfparser.PrtfParser.PagsegContext;
 import it.twenfir.prtfparser.PrtfParser.PrtfContext;
 import it.twenfir.prtfparser.PrtfParser.RecordContext;
 import it.twenfir.prtfparser.PrtfParser.RecordKeywordsContext;
@@ -48,6 +57,8 @@ import it.twenfir.prtfparser.PrtfParser.TermContext;
 import it.twenfir.prtfparser.PrtfParser.TextContext;
 import it.twenfir.prtfparser.PrtfParser.TimeContext;
 import it.twenfir.prtfparser.PrtfParser.UnderlineContext;
+import it.twenfir.prtfparser.ast.Barcode;
+import it.twenfir.prtfparser.ast.Chrid;
 import it.twenfir.prtfparser.ast.CondOp;
 import it.twenfir.prtfparser.ast.Condition;
 import it.twenfir.prtfparser.ast.Cpi;
@@ -62,13 +73,18 @@ import it.twenfir.prtfparser.ast.Entry;
 import it.twenfir.prtfparser.ast.EntryKeywords;
 import it.twenfir.prtfparser.ast.Field;
 import it.twenfir.prtfparser.ast.FileKeywords;
+import it.twenfir.prtfparser.ast.Font;
+import it.twenfir.prtfparser.ast.HexString;
+import it.twenfir.prtfparser.ast.HexStringElement;
 import it.twenfir.prtfparser.ast.Highlight;
 import it.twenfir.prtfparser.ast.Indicator;
 import it.twenfir.prtfparser.ast.Label;
 import it.twenfir.prtfparser.ast.LocValue;
 import it.twenfir.prtfparser.ast.OpTerm;
 import it.twenfir.prtfparser.ast.PageNumber;
+import it.twenfir.prtfparser.ast.Pagseg;
 import it.twenfir.prtfparser.ast.Prtf;
+import it.twenfir.prtfparser.ast.Record;
 import it.twenfir.prtfparser.ast.RecordKeywords;
 import it.twenfir.prtfparser.ast.Ref;
 import it.twenfir.prtfparser.ast.RefField;
@@ -78,7 +94,7 @@ import it.twenfir.prtfparser.ast.Time;
 import it.twenfir.prtfparser.ast.Underline;
 import it.twenfir.prtfparser.ast.Usage;
 
-public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
+public class AstBuilder extends PrtfParserBaseVisitor<AstNode> {
 
 	private Pattern endDescRe = Pattern.compile("\\+|-");
 	private Pattern eolRe = Pattern.compile("\\r|\\n");
@@ -89,29 +105,70 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 		this.listener = listener != null ? listener : new DefaultErrorListener();
 	}
 
+	private int findFirstNotZero(String s) {
+		int start = 0;
+		while ( s.charAt(start) == '0' ) {
+			start++;
+			if ( start == s.length() ) {
+				return -1;
+			}
+		}
+		return start;
+	}
+	
+	private BigDecimal extractDecimal(NumberContext ctx) {
+		if ( ctx == null ) {
+			return null;
+		}
+		String value = ctx.getText();
+		int start = findFirstNotZero(value);
+		if ( start == -1 ) {
+			return BigDecimal.ZERO;
+		}
+		if ( start > 0 ) {
+			value = value.substring(start);
+		}
+		return new BigDecimal(value);
+	}
+
+	private Integer extractInteger(ParserRuleContext ctx) {
+		if ( ctx == null ) {
+			return null;
+		}
+		String value = ctx.getText();
+		if ( value.indexOf('.') != -1 ) {
+			throw new AstException("Integer value expected");
+		}
+		int start = findFirstNotZero(value);
+		if ( start == -1 ) {
+			return 0;
+		}
+		if ( start > 0 ) {
+			value = value.substring(start);
+		}
+		return Integer.decode(value);
+	}
+
 	private LocValue extractLocValue(LocValueContext ctx) {
 		boolean increment = ctx.PLUS() != null;
-		Integer value = null;
-		if ( ctx.NUMBER() != null ) {
-			value = Integer.decode(ctx.NUMBER().getText());
-		}
+		BigDecimal value = extractDecimal(ctx.number());
 		return new LocValue(increment, value);
 	}
 	
 	private Integer extractSkipa(List<SkipaContext> l) {
-		return l.size() > 0 ? Integer.decode(l.get(0).NUMBER().getText()) : null;
+		return l.size() > 0 ? extractInteger(l.get(0).number()) : null;
 	}
 	
 	private Integer extractSkipb(List<SkipbContext> l) {
-		return l.size() > 0 ? Integer.decode(l.get(0).NUMBER().getText()) : null;
+		return l.size() > 0 ? extractInteger(l.get(0).number()) : null;
 	}
 	
 	private Integer extractSpacea(List<SpaceaContext> l) {
-		return l.size() > 0 ? Integer.decode(l.get(0).NUMBER().getText()) : null;
+		return l.size() > 0 ? extractInteger(l.get(0).number()) : null;
 	}
 	
 	private Integer extractSpaceb(List<SpacebContext> l) {
-		return l.size() > 0 ? Integer.decode(l.get(0).NUMBER().getText()) : null;
+		return l.size() > 0 ? extractInteger(l.get(0).number()) : null;
 	}
 
 	@Override
@@ -119,6 +176,26 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 		return AstHelper.visit(this, (ParserRuleContext)node);
 	}
 
+	@Override
+	public Chrid visitChrid(ChridContext ctx) {
+        Location location = AstHelper.location(ctx);
+        Chrid node = new Chrid(location);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+	}
+
+	@Override
+	public AstNode visitBarcode(BarcodeContext ctx) {
+        Location location = AstHelper.location(ctx);
+		String name = ctx.IDENTIFIER().getText();
+		BigDecimal height = extractDecimal(ctx.number(0));
+		BigDecimal width = extractDecimal(ctx.number(1));
+		BigDecimal ratio = extractDecimal(ctx.number(2));
+		Barcode node = new Barcode(location, name, height, width, ratio);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+	}
+	
 	@Override
 	public Condition visitCondition(ConditionContext ctx) {
         Location location = AstHelper.location(ctx);
@@ -130,7 +207,7 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	@Override
 	public Cpi visitCpi(CpiContext ctx) {
         Location location = AstHelper.location(ctx);
-        int value = Integer.parseInt(ctx.NUMBER().getText());
+        Integer value = extractInteger(ctx.number());
         Cpi node = new Cpi(location, value);
         AstHelper.visitChildren(this, ctx, node);
         return node;
@@ -140,8 +217,8 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	public DataType visitDataType(DataTypeContext ctx) {
 		Location location = AstHelper.location(ctx);
 		String type = ctx.TYPE() != null ? ctx.TYPE().getText() : null;
-		Integer size = ctx.NUMBER(0) != null ? Integer.parseInt(ctx.NUMBER(0).getText()) : null;
-		Integer precision = ctx.NUMBER(1) != null ? Integer.parseInt(ctx.NUMBER(1).getText()) : null;
+		Integer size = extractInteger(ctx.length());
+		Integer precision = extractInteger(ctx.precision());
 		if ( precision == null && type != null && type.charAt(0) == 'S' ) {
 			precision = 0;
 		}
@@ -247,11 +324,24 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
 	public EntryKeywords visitEntryKeywords(EntryKeywordsContext ctx) {
 		Location location = AstHelper.location(ctx);
 		String dateFormat = ctx.datfmt().size() > 0 ? ctx.datfmt().get(0).FC_EUR().getText() : null;
-        Integer skipa = extractSkipa(ctx.skipa());
-        Integer skipb = extractSkipb(ctx.skipb());
-        Integer spacea = extractSpacea(ctx.spacea());
-        Integer spaceb = extractSpaceb(ctx.spaceb());
+		Integer skipa = null;
+		Integer skipb = null;
+		Integer spacea = null;
+		Integer spaceb = null;
+		String error = null;
+		try {
+			skipa = extractSkipa(ctx.skipa());
+			skipb = extractSkipb(ctx.skipb());
+			spacea = extractSpacea(ctx.spacea());
+			spaceb = extractSpaceb(ctx.spaceb());
+		}
+		catch ( AstException e ) {
+			error = e.getMessage();
+		}
 		EntryKeywords node = new EntryKeywords(location, dateFormat, skipa, skipb, spacea, spaceb);
+		if ( error != null ) {
+			listener.astError(node, error);
+		}
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
 	}
@@ -276,6 +366,54 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
         return node;
 	}
 
+	@Override
+	public AstNode visitFont(FontContext ctx) {
+        Location location = AstHelper.location(ctx);
+        Integer identifier = extractInteger(ctx.number(0));
+        Integer pointsize = extractInteger(ctx.number(1));
+        Font node = new Font(location, identifier, pointsize);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+	}
+	
+	@Override
+	public HexString visitHexString(HexStringContext ctx) {
+		Location location = AstHelper.location(ctx);
+		HexString node = new HexString(location);
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+
+	@Override
+	public HexStringElement visitHexStringElement(HexStringElementContext ctx) {
+		Location location = AstHelper.location(ctx);
+		StringBuilder sb = new StringBuilder();
+		for ( TerminalNode ds : ctx.XSTRING_START() ) {
+			Matcher m = endDescRe.matcher(ds.getText());
+			int i = -1;
+			while ( m.find() ) {
+				i = m.start();
+			}
+			if ( i != -1 ) {
+				String s = ds.getText().charAt(i) == '-' && ds.getText().charAt(i-1) == ' ' ?
+						ds.getText().substring(0, i - 1) : ds.getText().substring(0, i);
+				sb.append(s);
+			}
+			else {
+				m = eolRe.matcher(ds.getText());
+				m.find();
+				i = m.start();
+				sb.append(ds.getText().substring(0, i));
+			}
+		}
+		if ( ctx.XSTRING() != null ) {
+			sb.append(ctx.XSTRING().getText());
+		}
+		HexStringElement node = new HexStringElement(location, sb.toString());
+		AstHelper.visitChildren(this, ctx, node);
+		return node;
+	}
+	
 	@Override
 	public Highlight visitHighlight(HighlightContext ctx) {
         Location location = AstHelper.location(ctx);
@@ -326,6 +464,17 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
     }
 	
     @Override
+    public Pagseg visitPagseg(PagsegContext ctx) {
+        Location location = AstHelper.location(ctx);
+        String library = ctx.IDENTIFIER().getText();
+        BigDecimal down = extractDecimal(ctx.number(0));
+        BigDecimal across = extractDecimal(ctx.number(1));
+        Pagseg node = new Pagseg(location, library, down, across);
+        AstHelper.visitChildren(this, ctx, node);
+        return node;
+    }
+    
+    @Override
     public Prtf visitPrtf(PrtfContext ctx) {
         Location location = AstHelper.location(ctx);
         Prtf node = new Prtf(location);
@@ -334,9 +483,9 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
     }
 
     @Override
-    public it.twenfir.prtfparser.ast.Record visitRecord(RecordContext ctx) {
+    public Record visitRecord(RecordContext ctx) {
         Location location = AstHelper.location(ctx);
-        it.twenfir.prtfparser.ast.Record node = new it.twenfir.prtfparser.ast.Record(
+        Record node = new Record(
         		location, ctx.recordName.getText());
         AstHelper.visitChildren(this, ctx, node);
         return node;
@@ -345,11 +494,24 @@ public class AstBuilder extends PrtfParserBaseVisitor<AstNode>{
     @Override
     public RecordKeywords visitRecordKeywords(RecordKeywordsContext ctx) {
 		Location location = AstHelper.location(ctx);
-        Integer skipa = extractSkipa(ctx.skipa());
-        Integer skipb = extractSkipb(ctx.skipb());
-        Integer spacea = extractSpacea(ctx.spacea());
-        Integer spaceb = extractSpaceb(ctx.spaceb());
+		Integer skipa = null;
+		Integer skipb = null;
+		Integer spacea = null;
+		Integer spaceb = null;
+		String error = null;
+		try {
+			skipa = extractSkipa(ctx.skipa());
+			skipb = extractSkipb(ctx.skipb());
+			spacea = extractSpacea(ctx.spacea());
+			spaceb = extractSpaceb(ctx.spaceb());
+		}
+		catch ( AstException e ) {
+			error = e.getMessage();
+		}
 		RecordKeywords node = new RecordKeywords(location, skipa, skipb, spacea, spaceb);
+		if ( error != null ) {
+			listener.astError(node, error);
+		}
 		AstHelper.visitChildren(this, ctx, node);
 		return node;
     }

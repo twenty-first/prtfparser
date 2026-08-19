@@ -1,26 +1,13 @@
 package it.twenfir.prtfparser.ast;
 
-import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
+import it.twenfir.parser.ast.CommonRef;
 
-public class Ref extends AstNode {
-
-	private String library;
-	private String reference;
+public class Ref extends CommonRef {
 	
 	public Ref(Location location, String library, String reference) {
-		super(location);
-		this.library = library;
-		this.reference = reference;
-	}
-
-	public String getLibrary() {
-		return library;
-	}
-
-	public String getReference() {
-		return reference;
+		super(location, library, reference);
 	}
 
 	

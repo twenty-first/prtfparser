@@ -10,4 +10,8 @@ public class TestBase {
 		this.helper = new Helper(log);
 	}
 
+	protected PrtfParser parser(String src) {
+		return helper.driver(src).getParser();
+	}
+
 }

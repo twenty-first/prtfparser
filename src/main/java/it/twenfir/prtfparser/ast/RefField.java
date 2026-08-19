@@ -1,38 +1,20 @@
 package it.twenfir.prtfparser.ast;
 
-import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
+import it.twenfir.parser.ast.CommonRefField;
 
-public class RefField extends AstNode {
+public class RefField extends CommonRefField {
 
 	private String format;
-	private String name;
-	private String library;
-	private String file;
 	
 	public RefField(Location location, String format, String name, String library, String file) {
-		super(location);
+		super(location, name, library, file);
 		this.format = format;
-		this.name = name;
-		this.library = library;
-		this.file = file;
 	}
 
 	public String getFormat() {
 		return format;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getLibrary() {
-		return library;
-	}
-
-	public String getFile() {
-		return file;
 	}
 
     public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {

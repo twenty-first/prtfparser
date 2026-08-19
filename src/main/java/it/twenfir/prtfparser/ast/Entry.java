@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.Location;
 
-public abstract class Entry extends AstNode {
+public abstract class Entry extends KeywordNode {
 
 	private List<Condition> conditions = new ArrayList<Condition>();
 	
@@ -29,18 +28,29 @@ public abstract class Entry extends AstNode {
 		return getChild(it.twenfir.prtfparser.ast.Location.class);
 	}
 	
-	private EntryKeywords getKeywords() {
+	@Override
+	public EntryKeywords getKeywords() {
 		return getChild(EntryKeywords.class);
 	}
     
+	public Barcode getBarcode() {
+		EntryKeywords k = getKeywords();
+		return k != null ? k.getBarcode() : null;		
+	}
+
 	public Integer getCpi() {
 		EntryKeywords k = getKeywords();
 		return k != null ? k.getCpi() : null;
 	}
 	
-	public boolean isDate() {
+	public Date getDate() {
 		EntryKeywords k = getKeywords();
-		return k != null && k.isDate();
+		return k != null ? k.getDate() : null;
+	}
+	
+	public String getDateFormat() {
+		EntryKeywords k = getKeywords();
+		return k != null ? k.getDateFormat() : null;
 	}
 	
 	public String getDefault() {
@@ -58,9 +68,9 @@ public abstract class Entry extends AstNode {
 		return k != null ? k.getEditWord() : null;
 	}
 	
-	public boolean isHighlight() {
+	public Font getFont() {
 		EntryKeywords k = getKeywords();
-		return k != null && k.isHighlight();
+		return k != null ? k.getFont() : null;
 	}
 
 	public boolean isPageNumber() {
@@ -73,29 +83,19 @@ public abstract class Entry extends AstNode {
 		return k != null ? k.getRefField() : null;
 	}
 
-	public Integer getSkipAfter() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSkipAfter() : null;
+	public boolean isChrid() {
+		EntryKeywords k = getKeywords();
+		return k != null && k.isChrid();
 	}
 
-	public Integer getSkipBefore() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSkipBefore() : null;
+	public boolean isTime() {
+		EntryKeywords k = getKeywords();
+		return k != null && k.isTime();
 	}
 
-	public Integer getSpaceAfter() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSpaceAfter() : null;
+	public boolean isUnderline() {
+		EntryKeywords k = getKeywords();
+		return k != null && k.isUnderline();
 	}
 
-	public Integer getSpaceBefore() {
-		Keywords k = getKeywords();
-		return k != null ? k.getSpaceBefore() : null;
-	}
-
-	public String getText() {
-		Keywords k = getKeywords();
-		return k != null ? k.getText() : null;
-	}
-	
 }

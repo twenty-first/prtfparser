@@ -65,4 +65,8 @@ public class PrtfParserDriver extends ParserDriverBase {
     public TokenStream getTokenStream() {
     	return tokenStream;
     }
+
+	public PrtfParser getParser() {
+		return parser;
+	}
 }

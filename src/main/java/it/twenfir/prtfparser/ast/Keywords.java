@@ -17,6 +17,10 @@ public abstract class Keywords extends AstNode {
 		this.spaceAfter = spaceAfter;
 		this.spaceBefore = spaceBefore;
 	}
+	
+	public boolean isHighlight() {
+		return getChild(Highlight.class) != null;
+	}
 
 	public Integer getSkipAfter() {
 		return skipAfter;

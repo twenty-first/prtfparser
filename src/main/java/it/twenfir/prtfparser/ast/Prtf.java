@@ -5,14 +5,15 @@ import java.util.Iterator;
 import it.twenfir.antlr.ast.AstNode;
 import it.twenfir.antlr.ast.AstVisitor;
 import it.twenfir.antlr.ast.Location;
+import it.twenfir.parser.ast.CommonDds;
 
-public class Prtf extends AstNode {
+public class Prtf extends AstNode implements CommonDds<Field> {
 	
     public Prtf(Location location) {
         super(location);
     }
 	
-    private FileKeywords getKeywords() {
+    public FileKeywords getKeywords() {
     	return getChild(FileKeywords.class);
     }
     
@@ -25,9 +26,19 @@ public class Prtf extends AstNode {
 		FileKeywords fk = getKeywords();
 		return fk != null ? fk.getRef() : null;
 	}
+    
+	public boolean isRelPos() {
+		FileKeywords fk = getKeywords();
+		return fk != null && fk.isRelPos();
+	}
 	
 	public Iterator<Record> getRecords() {
 		return getChildren(Record.class);
+	}
+
+	@Override
+	public Iterator<Field> getFields() {
+		return getDescendants(Field.class);
 	}
 	
     public <ValueT> ValueT accept(AstVisitor<? extends ValueT> visitor) {
